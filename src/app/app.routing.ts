@@ -128,6 +128,15 @@ const routes: Routes = [
         }
       },
       {
+        path: 'logdetails/:uniq_code/:log_id',
+        loadChildren: './log-details/log-details.module#LogDetailsModule',
+        data: {
+          title: 'Log Details',
+          description: 'Description Meta Tag Content',
+          slug: 'logdetails'
+        }
+      },
+      {
         path: 'editclaimdetail/:post_id',
         loadChildren: './claim-user-edit/claim-user-edit.module#ClaimusereditModule',
         data: {

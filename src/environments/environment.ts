@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   liveApiUrl: 'http://api.hairfolio.tech/',
-  apiUrl: 'http://hairfolio-prod.herokuapp.com/',
+  apiUrl: 'http://hairfolio-prod.herokuapp.com/v2/',
   defaultImgUrl: 'assets/images/hf_imagedisplay.png',
   cloud_name: "drdal2urr",
   search_display_width: 812,
