@@ -1,0 +1,70 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="commonpadfull" [ngClass]="{show: shouldShow, hide: !shouldShow }">
+      <div class="starredrowfull">
+        <tabset>
+          <tab>
+            <ng-template tabHeading><span (click)="getPostByTypes('favourites')"><i class="favriticn"></i> Favorites</span></ng-template>
+            <div class="fade-effects">
+              <div class="favoritesitem" *ngFor="let fav of fav_posts">
+                <div class="homepageitem">
+                  <div class="homeitemhover">
+                    <div class="favthumb">
+                      <img src="{{fav?.product?.image_url}}" (error)="imgErrorHandler($event)" alt="">
+                    </div>
+                    <div class="overdetails">
+                      <div class="itemoverlay" (click)="prodDetails(fav?.product?.id,fav?.product?.created_at)">
+                        <div class="itemprofile">
+                          <span class="itemprofilename">{{fav?.product?.name}}</span>
+                        </div>
+                        <div class="productitem">
+                          <ul>
+                            <li *ngFor="let prod of post?.products"><a href="javascript:void(0)">
+                                <span class="prothumb"><img src="{{prod?.image_url}}" (error)="imgErrorHandler($event)"></span>
+                                <span class="proinfo">{{prod?.name | titlecase}}</span>
+                                <span class="pricetag">${{(prod?.price != null)? prod?.price: '00.00'}}</span>
+                              </a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </tab>
+          <tab>
+            <ng-template tabHeading><i class="useryouicn"></i> You</ng-template>
+            <div class="fade-effects">
+              <h1>You</h1>
+
+            </div>
+
+          </tab>
+          <tab>
+            <ng-template tabHeading><i class="followicn"></i> Following</ng-template>
+            <div class="fade-effects">
+              <h1>Following</h1>
+            </div>
+          </tab>
+
+        </tabset>
+      </div>
+      <div class="row">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>

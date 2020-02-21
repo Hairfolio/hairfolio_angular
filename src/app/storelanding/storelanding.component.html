@@ -1,0 +1,216 @@
+<toaster-container [toasterconfig]="config" style="z-index:999999;"></toaster-container>
+<div class="container-fluid">
+  <div class="row">
+    <div class="storemenufull njdansjn storeheight" [ngClass]="{show: shouldShow || !shouldShow}">
+      <nav class="navbar navbar-expand-md">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"
+          (click)="isCollapsed = !isCollapsed">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar" [collapse]="isCollapsed">
+          <ul class="navbar-nav justify-content-between">
+            <li class="nav-item dropdown" *ngFor="let headers of store_header "><label><span class="nav-link"
+                  (click)="store_headers(headers?.type,headers?.name)">
+                  {{headers?.name | titlecase }}
+                </span>
+                <input type="checkbox">
+
+                <ul *ngIf="headers?.data.length" id="basic-link-dropdown" class="dropdown-menu" role="menu"
+                  aria-labelledby="basic-link">
+                  <div class="dropdownlink">
+                    <li class="nav-item-link">
+                      <ul>
+                        <li *ngFor="let sub_branch of headers?.data "><a href="javascript:void(0)"
+                            (click)="sub_cat_service(headers.type,sub_branch.id,sub_branch.name)"><small>{{sub_branch?.name}}</small></a>
+                        </li>
+                      </ul>
+                    </li>
+                  </div>
+                </ul>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="stroelandingslider">
+      <a href="javascript:void(0)" *ngIf="discountsliders?.product_id != null"
+        (click)="bannerclilk(discountsliders?.product_id)"> <img src="{{discountsliders?.banner_image}}"></a>
+      <a *ngIf="discountsliders?.product_id == null"> <img src="{{discountsliders?.banner_image}}"></a>
+      <div class="slidercontentleft">
+        <div class="row justify-content-between align-items-end">
+          <div class="col-6 col-sm-5 col-md-4 sliderleft-title">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="storelandingstylerow">
+    <div class="row">
+      <div *ngIf="products?.length != 0" class="col-sm-12 col-xs-12 slidercolumn">
+        <div class="col-sm-12 topcentertitle text-center">
+          <h1>New Arrivals</h1>
+        </div>
+        <div class="row justify-content-between slidertitle">
+          <div class="col-6 col-sm-12 text-right titlelink"><a href="javascript:void(0)" (click)="storeclilk()">See
+              All</a></div>
+        </div>
+        <div class="productslider">
+          <ngx-carousel [inputs]="carouselTile">
+            <ngx-item NgxCarouselItem *ngFor="let item of products">
+              <div class="storeproduct" (click)="seeProductDetails_screen($event, item?.id)" style="cursor: pointer;">
+                <div class="storeproducthumb d-flex justify-content-center align-items-center">
+                  <img img-preloader="{{item?.product_image}}" style=" object-fit: contain;"
+                    (error)="imgErrorHandler($event)">
+                  <div class="overlaybtn d-flex justify-content-center align-items-center">
+                    <a class="btngray" (click)="openModal(template1, item);$event.stopPropagation()">quick shop</a>
+                  </div>
+                  <a *ngIf="is_logged_in" href="javascript:void(0)" (click)="addFavourite(item?.id,item?.is_favourite);$event.stopPropagation()">
+                    <i class="hearticon" [ngClass]="{'hearticon-active': item?.is_favourite}"></i>
+                  </a>
+                </div>
+                <div class="d-flex flex-wrap flex-column">
+                  <p> {{item?.name.length > 27 ? item?.name.substr(0,27).concat("..."): item?.name}} </p>
+                  <small>
+                    {{(item?.tag?.name == null)?'&#160;':  item?.tag?.name.length > 27 ?   item?.tag?.name.substr(0,27).concat("..."):  item?.tag?.name}}
+                  </small>
+                      <strong class="flex-items"> <span class="minus-prisusm" *ngIf="item.price != item.final_price"><s
+                        style="color: #9e9697;">${{(item?.price != null)? item?.price: '00.00'}}</s> &#160;&#160; </span><span style="color: #e74c3c;" class="main-pridsnkl" *ngIf="item.price != item.final_price">
+                    ${{(item?.final_price != null)? item?.final_price: '00.00'}} </span><span class="main-pridsnkl" *ngIf="item.price == item.final_price">
+                        ${{(item?.final_price != null)? item?.final_price: '00.00'}} </span>&#160;&#160;<a style="color: #e74c3c;font-size: small; margin-bottom:0px"
+                       *ngIf="item.discount_percentage != null">{{item?.discount_percentage}}%
+                      OFF </a></strong>
+                </div>
+              </div>
+            </ngx-item>
+            <button NgxCarouselPrev class='leftRs'><img src="assets/images/left-arrow.svg"></button>
+            <button NgxCarouselNext class='rightRs'><img src="assets/images/right-arrow.svg"></button>
+          </ngx-carousel>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="trendingproducts.length" class="storenewtranding">
+      <div class="row justify-content-between align-items-center">
+        <div class="newtrandingtitle">
+          <h3>Trending Now</h3>
+        </div>
+        <div class="newtrandingsliders">
+          <ngx-carousel [inputs]="carouselThree" class="trendingslider">
+            <ngx-item NgxCarouselItem *ngFor="let item of trendingproducts">
+              <div class="sliderborderbox">
+                <div class="tredingprothumb">
+                    <a style="cursor: pointer;" (click)="openModal(template1, item)" >
+                  <img img-preloader="{{item?.product_image}}" (error)="imgErrorHandler($event)"
+                    style=" object-fit:contain;height: 100%; width:100%"></a>
+                </div>
+                <h2 class="word-wraping">{{item?.name}}</h2>
+                <span class="word-wraping">{{item?.tag?.name ? item?.tag?.name :'&#160;'}}</span>
+                <strong class="flex-items">
+                  <span class="minus-prisusm" *ngIf="item.price != item.final_price"><s
+                      style="color: #9e9697;">${{(item?.price != null)? item?.price: '00.00'}}</s></span>
+                  <span  style="color: #e74c3c;" *ngIf="item.price != item.final_price" class="main-pridsnkl">${{(item?.final_price != null)? item?.final_price: '00.00'}}</span>
+                  <span *ngIf="item.price == item.final_price" class="main-pridsnkl">${{(item?.final_price != null)? item?.final_price: '00.00'}}</span>
+                  <p  style="color: #e74c3c;font-size: small; margin-bottom:0px" *ngIf="item.discount_percentage != null">
+                    {{item?.discount_percentage}}%
+                    OFF </p>
+                </strong>
+                <a href="javascript:void(0)" (click)="openModal(template1, item)" class="btngrayhoveb">Shop It</a>
+              </div>
+            </ngx-item>
+            <button NgxCarouselPrev class='leftRs'>&lt;</button>
+            <button NgxCarouselNext class='rightRs'>
+              <span class="dragarrow"></span>
+            </button>
+          </ngx-carousel>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="storelandingsales" class="storebottombanner" style="background: none;">
+      <a href="javascript:void(0)" *ngIf="storelandingsales?.active" (click)="salemodule(storelandingsales)"> <img
+          src="{{storelandingsales?.image?.image?.url}}" (error)="bimgErrorHandler($event)" width="100%">
+      </a>
+      <a href="javascript:void(0)" *ngIf="!storelandingsales?.active" (click)="saleout()"> <img
+          src="{{storelandingsales?.image?.image?.url}}" (error)="bimgErrorHandler($event)" width="100%">
+      </a>
+      <!-- <a href="javascript:void(0)" *ngIf="!storelandingsales?.active" (click)="requestModal(template10)"> <img
+        src="{{storelandingsales?.image?.image?.url}}" (error)="bimgErrorHandler($event)" width="100%">
+    </a> -->
+      <!-- <a href="javascript:void(0)" *ngIf="!storelandingsales?.active" (click)="saleovermodule()"> <img
+        src="{{storelandingsales?.image?.image?.url}}" (error)="bimgErrorHandler($event)" width="100%">
+    </a> -->
+    </div>
+  </div>
+</div>
+<ng-template #template1>
+  <div class="modal-body quickshopmodel storelandind-popup-man">
+    <div class="close-btn">
+      <a href="javascript:void(0)" (click)="modalRef.hide()"> <img src="assets/images/gn_0.png" height="85px;"></a>
+    </div>
+    <div class="d-flex align-items-end justify-content-between flex-wrap">
+      <div class="popproleftcol text-center">
+        <img img-preloader="{{product_data?.product_image}}" style=" object-fit: contain;min-height:520px;"
+          (error)="imgErrorHandler($event)">
+      </div>
+      <div class="productpopright">
+        <div class="quickshopdetail">
+          <h1 style="font-size: 28px; width: 90%;"> {{product_data?.name.length > 75 ?
+            product_data?.name.substr(0,75).concat("..."):
+            product_data?.name}}</h1>
+          <p *ngIf="product_data?.description != null">
+            {{product_data?.description.length > 232 ?
+              product_data?.description.substr(0,232).concat("..."):
+              product_data?.description}}
+          </p>
+          <p *ngIf="product_data?.description == null">No Description</p>
+          <strong>
+            <h3><s *ngIf="product_data?.price != product_data?.final_price"
+              style="color: #9e9697;" ><small>${{(product_data?.price != null)? product_data?.price: '00.00'}}</small></s>
+              &#160;
+              <span *ngIf="product_data?.price != product_data?.final_price" style="color: #e74c3c;">
+                ${{(product_data?.final_price != null)? product_data?.final_price: '00.00'}}</span>
+              <span *ngIf="product_data?.price == product_data?.final_price">
+                ${{(product_data?.final_price != null)? product_data?.final_price: '00.00'}}</span>
+            </h3>
+          </strong>
+        </div>
+        <div class="quickshopcolorcol">
+          <div class="row justify-content-between">
+            <div class="services col-sm-6 col-md-7">
+              <h4>Qty</h4>
+              <div class="counter">
+                <button (click)="decrement()" class="minus" [disabled]="(count>1)? false:true">-</button>
+                <input type="text" value="{{count}}" class="form-control" (ngModelChange)="onChange($event)" numbersOnly
+                  readonly="true">
+                <button (click)="increment()" class="plus" [disabled]="count>=product_data?.quantity">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="addtocarbtnpop">
+          <div class="row align-items-end">
+            <div *ngIf="product_data?.quantity != 0 || null" class="col-sm-7 col-lg-7"><a *ngIf="is_logged_in"
+                href="javascript:void(0)" (click)="addToCart(product_data?.id,count)" class="btnblack"><i><img
+                    src="assets/images/cart-icon-fill.svg"></i><span>Add
+                  To Cart</span></a><a *ngIf="!is_logged_in" href="javascript:void(0)" (click)="notaddproduct()"
+                class="btnblack"><i><img src="assets/images/cart-icon-fill.svg"></i><span>Add
+                  To Cart</span></a></div>
+            <div *ngIf="product_data?.quantity == 0 || null" class="col-sm-7 col-lg-7">
+              <a class="outofstock"><u style="color: #d11515;">Product Not available or Out of
+                  Stock</u></a>
+            </div>
+            <div class="col-sm-5 col-lg-5">
+              <a href="javascript:void(0)" class="link" (click)="seeProductDetails($event, product_data?.id)">See
+                full details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #template10>
+  <div class="modal-body text-center" style="background: white;padding:50px;border-radius:13px;">
+    <h5> Sale Is Over Wait Next Sale</h5>
+    <button type="button" class="btn btn-default" style="background: #c4caca;" (click)="decline()" >Ok</button>
+  </div>
+</ng-template>

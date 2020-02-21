@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="commonpadfull" [ngClass]="{show: shouldShow, hide: !shouldShow }">
+            <div class="blogbgrowtop d-flex align-items-center">
+                <h1>Blog</h1>
+            </div>
+            <div *ngIf="blog_list?.length != 0" class="blogrow">
+                <div class="row align-items-start">
+                    <div *ngFor="let blog_item of blog_list" class="col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                        <div class="blogcol">
+                            <div class="blogthumb" style="min-height: 520px;">
+                                <a href="javascript:void(0)" (click)="openModal(template, blog_item)">
+                                    <img img-preloader="{{blog_item?.image?.image?.url}}" alt=""></a>
+                            </div>
+                            <p>Hair Care <span>/</span> <span>{{blog_item?.created_at | date:'d MMMM y'}}</span></p>
+                            <h5>
+                                {{blog_item?.title.length > 35 ? blog_item?.title.substr(0,35).concat("..."): blog_item?.title}}
+                            </h5>
+                            <a href="javascript:void(0)" (click)="openModal(template, blog_item)">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="blog_list?.length == 0" class="blogrow d-flex productrow flex-wrap">
+                <h5> Not available any blog post </h5>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #template>
+    <div class="modal-body quickshopmodel storelandind-popup-man" style="padding-top: 25px;">
+        <div class="close-btn">
+            <a href="javascript:void(0)" (click)="modalRef.hide()">
+                <img src="assets/images/gn_0.png" height="85px;">
+            </a>
+        </div>
+        <div class="d-flex justify-content-between flex-wrap">
+            <div class="popproleftcol text-center">
+                <img img-preloader="{{blog_details?.image?.image?.url}}" (error)="imgErrorHandler($event)" style="margin-top: 20px;">
+            </div>
+            <div class="productpopright" style="overflow:auto;">
+                <h1 class="blog_popup" style="font-size: 28px;">{{blog_details?.title}}</h1>
+                <div class="content-blog" [innerHTML]="blog_details?.description">No Description Found</div>
+            </div>
+        </div>
+    </div>
+</ng-template>

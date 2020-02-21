@@ -1,0 +1,562 @@
+<div class="home-main-section">
+  <toaster-container [toasterconfig]="config" style="z-index:999999;"></toaster-container>
+  <div class="container-fluid">
+    <div *ngIf="!search_box" class="row">
+      <div class="commonpadfull" [ngClass]="{show: shouldShow || !shouldShow}">
+          <div *ngIf="tagFormArray?.length != 0"  class="col-12 col-sm-12 custom-taglist text-right titlelink">
+              <a href="javascript:void(0)" (click)="clearbutton()">Clear</a>
+          </div>
+        <div class="tagitemtop" style="position: relative">
+          <drag-scroll #nav [scrollbar-hidden]="false">
+            <a *ngFor="let tag of tags_scroll" (click)="getPostByTag(tag?.id ,tag?.name)"
+              [ngClass]="{'active': isActive(tag?.id)}" drag-scroll-item
+              href="javascript:void(0)">{{tag?.name | titlecase}}</a>
+          </drag-scroll>
+          <button *ngIf="tags_scroll?.length >= 5" (click)="moveRight()" class="dragright"><span
+              class="dragarrow"></span></button>
+        </div>
+        <!-- <div *ngIf="tagFormArray?.length != 0" class="col-12 col-sm-12 text-right titlelink">
+            <a href="javascript:void(0)" (click)="clearbutton()">Clear</a>
+          </div> -->
+        <div *ngIf="tag_post" class="row">
+          <div class="col-sm-12 col-xs-12 slidercolumn">
+            <div class="row justify-content-between align-items-center slidertitle">
+              <div *ngIf="tag_images?.length != 0" class="col-6 col-sm-4">
+                <!-- <h1>
+                <a *ngFor="let tagname of tagnameFormArray">
+                  <div style="font-size: 20px;" class='storesamelist'>{{tagname}}</div>
+                </a></h1> -->
+                <h1>{{tag_titles}}</h1>
+              </div>
+              <div *ngIf="tag_images?.length >= 5" class="col-6 col-sm-4 text-right titlelink">
+                <a href="javascript:void(0)" (click)="pagescroll('tag')">See all</a>
+              </div>
+            </div>
+            <ngx-carousel [inputs]="carouselTile">
+              <ngx-item NgxCarouselItem *ngFor="let post of tag_images">
+                <div class="homepageitem">
+                  <div class="homeitemhover">
+                    <img img-preloader="{{post?.small?.photos[0]?.asset_url}}" (error)="imgErrorHandler($event)" alt="">
+                    <div class="overdetails">
+                      <div class="itemoverlay" (click)="postDetails(post?.small?.id)">
+                        <div class="itemprofile">
+                          <a href="javascript:void(0)"
+                            (click)="goToProfile(post?.small?.user?.id);$event.stopPropagation()">
+                            <span class="itemprofilepic"><img
+                                img-preloader="{{post?.small?.user?.avatar_cloudinary_id}}"
+                                (error)="profileimgHandler($event)"></span>
+                            <span *ngIf="post?.small?.user?.account_type === 'consumer'"
+                              class="itemprofilename">{{post?.small?.user?.first_name}}
+                              {{post?.small?.user?.last_name}}</span>
+                            <span *ngIf="post?.small?.user?.account_type === 'stylist'"
+                              class="itemprofilename">{{post?.small?.user?.first_name}}
+                              {{post?.small?.user?.last_name}}</span>
+                            <span *ngIf="post?.small?.user?.account_type === 'owner'" class="itemprofilename">{{post?.small?.user?.salon_name
+                              | titlecase }}</span>
+                            <span *ngIf="post?.small?.user?.account_type === 'ambassador'" class="itemprofilename">{{post?.small?.user?.brand_name
+                              | titlecase }}</span>
+                          </a>
+                        </div>
+                        <div class="productitem">
+                          <ul>
+                            <li *ngFor="let prod of post?.small?.products| slice:-3"><a href="javascript:void(0)"
+                                (click)="seeProductDetails($event, prod?.id);$event.stopPropagation()">
+                                <span *ngIf="prod?.product_image != null" class="prothumb"><img
+                                    img-preloader="{{prod?.product_image}}" (error)="imgErrorHandler($event)"></span>
+                                <span *ngIf="prod?.name != null" class="proinfo">{{prod?.name | titlecase}}</span>
+                                <span class="pricetag"  *ngIf="prod.price != prod.final_price"><s
+                                  style="color: #9e9697;">${{(prod?.price != null)? prod?.price: '00.00'}}</s>&#160;&#160;&#160;${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                                  <span class="pricetag"  *ngIf="prod.price == prod.final_price">${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                              </a></li>
+                          </ul>
+                        </div>
+                        <div class="hastagbottom">
+                          <div *ngIf="is_logged_in" class="hastagdetail">
+                            <div class="starred">
+                              <a *ngIf="!post?.small?.liked_by_me" href="javascript:void(0)"
+                                (click)="likepost(post?.small?.id,'tag_post');$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icon.svg"></i></a>
+                              <a *ngIf="post?.small?.liked_by_me" href="javascript:void(0)"
+                                (click)="unlikepost(post?.small?.id,'tag_post');$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icn-blue.svg"></i></a>
+                              <span>{{post?.small?.likes_count}}</span>
+                            </div>
+                            <div class="starred">
+                              <a href="javascript:void(0)"
+                                (click)="openModal(template1,post?.small?.id);$event.stopPropagation()">
+                                <i><img src="assets/images/chat-icon.svg"></i></a>
+                              <span>{{post?.small?.comments_count}}</span></div>
+                          </div>
+                          <div *ngIf="!is_logged_in" class="hastagdetail">
+                            <div class="starred">
+                              <a href="javascript:void(0)" (click)="notloginstared();$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icon.svg"></i></a>
+                              <span>{{post?.small?.likes_count}}</span>
+                            </div>
+                            <div class="starred">
+                              <a href="javascript:void(0)" (click)="notloginstared();$event.stopPropagation()">
+                                <i><img src="assets/images/chat-icon.svg"></i></a>
+                              <span>{{post?.small?.comments_count}}</span></div>
+                          </div>
+                          <p><a *ngFor="let tags_limit of post?.tags| slice:0:2"><a
+                                *ngIf="tags_limit != null">#{{tags_limit}}</a></a></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ngx-item>
+              <button NgxCarouselPrev class='leftRs'><img src="assets/images/left-arrow.svg"></button>
+              <button NgxCarouselNext class='rightRs'>
+                <div *ngIf="tag_images?.length >= 5"><img src="assets/images/right-arrow.svg"> </div>
+              </button>
+            </ngx-carousel>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-xs-12 slidercolumn">
+            <div class="row justify-content-between align-items-center slidertitle">
+              <div class="col-6 col-sm-4">
+                <h1>{{firstlist?.title_heading}} </h1>
+              </div>
+              <div *ngIf="firstlist?.posts.length >= 5" class="col-6 col-sm-4 text-right titlelink"><a
+                  href="javascript:void(0)" (click)="pagescroll('trending',firstlist?.title_heading,firstlist?.id)">See
+                  All</a></div>
+            </div>
+            <ngx-carousel [inputs]="carouselTile">
+              <ngx-item NgxCarouselItem *ngFor="let post of firstlist?.posts|slice:0:10">
+                <div class="homepageitem">
+                  <div class="homeitemhover">
+                    <img img-preloader="{{post?.photos[0]?.asset_url}}" (error)="imgErrorHandler($event)" alt="">
+                    <div class="overdetails">
+                      <div class="itemoverlay" (click)="postDetails(post?.id)">
+                        <div class="itemprofile">
+                          <a href="javascript:void(0)" (click)="goToProfile(post?.user?.id);$event.stopPropagation()">
+                            <span class="itemprofilepic"><img img-preloader="{{post?.user?.avatar_cloudinary_id}}"
+                                (error)="profileimgHandler($event)"></span>
+                            <span *ngIf="post?.user?.account_type === 'consumer'"
+                              class="itemprofilename">{{post?.user?.first_name}}
+                              {{post?.user?.last_name}}</span>
+                            <span *ngIf="post?.user?.account_type === 'stylist'"
+                              class="itemprofilename">{{post?.user?.first_name}}
+                              {{post?.user?.last_name}}</span>
+                            <span *ngIf="post?.user?.account_type === 'owner'" class="itemprofilename">{{post?.user?.salon_name
+                            | titlecase }}</span>
+                            <span *ngIf="post?.user?.account_type === 'ambassador'" class="itemprofilename">{{post?.user?.brand_name
+                            | titlecase }}</span>
+                          </a>
+                        </div>
+                        <div class="productitem">
+                          <ul>
+                            <li *ngFor="let prod of post?.products| slice:-3"><a href="javascript:void(0)"
+                                (click)="seeProductDetails($event, prod?.id);$event.stopPropagation()">
+                                <span *ngIf="prod?.product_image != null" class="prothumb"><img
+                                    img-preloader="{{prod?.product_image}}" (error)="imgErrorHandler($event)"></span>
+                                <span *ngIf="prod?.name != null" class="proinfo">{{prod?.name | titlecase}}</span>
+                                <!-- <span class="pricetag">${{(prod?.price != null)? prod?.price: '00.00'}}</span> -->
+                                <span class="pricetag"  *ngIf="prod.price != prod.final_price"><s
+                                  style="color: #9e9697;">${{(prod?.price != null)? prod?.price: '00.00'}}</s>&#160;&#160;&#160;${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                                  <span class="pricetag"  *ngIf="prod.price == prod.final_price">${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                              </a></li>
+                          </ul>
+                        </div>
+                        <div class="hastagbottom">
+                          <div class="hastagdetail">
+                            <div *ngIf="is_logged_in" class="starred">
+                              <a *ngIf="!post?.liked_by_me" href="javascript:void(0)"
+                                (click)="likepost(post?.id,'thred');$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icon.svg"></i></a>
+                              <a *ngIf="post?.liked_by_me" href="javascript:void(0)"
+                                (click)="unlikepost(post?.id,'thred');$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icn-blue.svg"></i></a>
+                              <span>{{post?.likes_count}}</span>
+                            </div>
+                            <div *ngIf="!is_logged_in" class="starred">
+                              <a href="javascript:void(0)" (click)="notloginstared();$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icon.svg"></i></a>
+                              <span>{{post?.likes_count}}</span>
+                            </div>
+                            <div *ngIf="is_logged_in" class="starred">
+                              <a href="javascript:void(0)"
+                                (click)="openModal(template1,post?.id);$event.stopPropagation()">
+                                <i><img src="assets/images/chat-icon.svg"></i></a>
+                              <span>{{post?.comments_count}}</span></div>
+                            <div *ngIf="!is_logged_in" class="starred"><a href="javascript:void(0)"
+                                (click)="notloginstared();$event.stopPropagation()"><i><img
+                                    src="assets/images/chat-icon.svg"></i></a><span>{{post?.comments_count}}</span>
+                            </div>
+                          </div>
+                          <p><a *ngFor="let tags of post?.photos[0]?.labels| slice:0:2"><a
+                                *ngIf="tags?.tag?.name != null">#{{tags?.tag?.name}}</a></a></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ngx-item>
+              <button NgxCarouselPrev class='leftRs'><img src="assets/images/left-arrow.svg"></button>
+              <button NgxCarouselNext class='rightRs'>
+                <div *ngIf="firstlist?.posts.length > 4 ? true:false"><img src="assets/images/right-arrow.svg"></div>
+              </button>
+            </ngx-carousel>
+            <div *ngIf="firstlist?.posts && firstlist?.posts?.length == 0">
+                <h5>No records found!</h5>
+              </div>
+          </div>
+
+          <!-- editor pics row-->
+          <div class="col-sm-12 col-xs-12 slidercolumn">
+            <div class="row justify-content-between align-items-center slidertitle">
+              <div class="col-6 col-sm-4">
+                <h1>{{secondlist?.title_heading}}</h1>
+              </div>
+              <div *ngIf="secondlist?.posts.length >= 5" class="col-6 col-sm-4 text-right titlelink"><a
+                  href="javascript:void(0)" (click)="pagescroll('editor',secondlist?.title_heading,secondlist?.id)">See
+                  All</a></div>
+            </div>
+            <ngx-carousel [inputs]="carouselTile">
+              <ngx-item NgxCarouselItem *ngFor="let post of secondlist?.posts |slice:0:10">
+                <div class="homepageitem home-slider">
+                  <div class="homeitemhover">
+                    <img img-preloader="{{post?.photos[0]?.asset_url}}" (error)="imgErrorHandler($event)" alt="">
+                    <div class="overdetails">
+                      <div class="itemoverlay" (click)="postDetails(post?.id)">
+                        <div class="itemprofile">
+                          <a href="javascript:void(0)" (click)="goToProfile(post?.user?.id);$event.stopPropagation()">
+                            <span class="itemprofilepic"><img img-preloader="{{post?.user?.avatar_cloudinary_id}}"
+                                (error)="profileimgHandler($event)"></span>
+                            <span *ngIf="post?.user?.account_type === 'consumer'"
+                              class="itemprofilename">{{post?.user?.first_name}}
+                              {{post?.user?.last_name}}</span>
+                            <span *ngIf="post?.user?.account_type === 'stylist'"
+                              class="itemprofilename">{{post?.user?.first_name}}
+                              {{post?.user?.last_name}}</span>
+                            <span *ngIf="post?.user?.account_type === 'owner'" class="itemprofilename">{{post?.user?.salon_name
+                            | titlecase }}</span>
+                            <span *ngIf="post?.user?.account_type === 'ambassador'" class="itemprofilename">{{post?.user?.brand_name
+                            | titlecase }}</span>
+                          </a>
+                        </div>
+                        <div class="productitem">
+                          <ul>
+                            <li *ngFor="let prod of post?.products| slice:-3"><a href="javascript:void(0)"
+                                (click)="seeProductDetails($event, prod?.id);$event.stopPropagation()">
+                                <span *ngIf="prod?.product_image != null" class="prothumb"><img
+                                    img-preloader="{{prod?.product_image}}" (error)="imgErrorHandler($event)"></span>
+                                <span *ngIf="prod?.name != null" class="proinfo">{{prod?.name | titlecase}}</span>
+                                <span class="pricetag"  *ngIf="prod.price != prod.final_price"><s
+                                  style="color: #9e9697;">${{(prod?.price != null)? prod?.price: '00.00'}}</s>&#160;&#160;&#160;${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                                  <span class="pricetag"  *ngIf="prod.price == prod.final_price">${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                              </a></li>
+                          </ul>
+                        </div>
+                        <div class="hastagbottom">
+                          <div class="hastagdetail">
+                            <div *ngIf="is_logged_in" class="starred">
+                              <a *ngIf="!post?.liked_by_me" href="javascript:void(0)"
+                                (click)="likepost(post?.id,'editor');$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icon.svg"></i></a>
+                              <a *ngIf="post?.liked_by_me" href="javascript:void(0)"
+                                (click)="unlikepost(post?.id,'editor');$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icn-blue.svg"></i></a>
+                              <span>{{post?.likes_count}}</span>
+                            </div>
+                            <div *ngIf="!is_logged_in" class="starred">
+                              <a href="javascript:void(0)" (click)="notloginstared();$event.stopPropagation()">
+                                <i><img src="assets/images/starred-icon.svg"></i></a>
+                              <span>{{post?.likes_count}}</span>
+                            </div>
+                            <div *ngIf="is_logged_in" class="starred">
+                              <a href="javascript:void(0)"
+                                (click)="openModal(template1,post?.id);$event.stopPropagation()">
+                                <i><img src="assets/images/chat-icon.svg"></i></a>
+                              <span>{{post?.comments_count}}</span></div>
+                            <div *ngIf="!is_logged_in" class="starred"><a href="javascript:void(0)"
+                                (click)="notloginstared();$event.stopPropagation()"><i><img
+                                    src="assets/images/chat-icon.svg"></i></a><span>{{post?.comments_count}}</span>
+                            </div>
+                          </div>
+                          <p><a *ngFor="let tags of post?.photos[0]?.labels| slice:0:2"><a
+                                *ngIf="tags?.tag?.name != null">#{{tags?.tag?.name}}</a></a></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ngx-item>
+              <button NgxCarouselPrev class='leftRs'><img src="assets/images/left-arrow.svg"></button>
+              <button NgxCarouselNext class='rightRs'>
+                <div *ngIf="secondlist?.posts?.length > 4 ? true:false"><img src="assets/images/right-arrow.svg"></div>
+              </button>
+            </ngx-carousel>
+            <div *ngIf="secondlist?.posts && secondlist?.posts?.length == 0">
+                <h5>No records found!</h5>
+              </div>
+          </div>
+
+
+          <!-- Stylish Near Me row-->
+          <div class="col-sm-12 col-xs-12 slidercolumn">
+            <div class="row justify-content-between align-items-center slidertitle">
+              <div class="col-6 col-sm-4">
+                <h1>{{title3}}</h1>
+              </div>
+              <div *ngIf="stylist_prof?.length >= 5" class="col-6 col-sm-4 text-right titlelink"><a
+                  href="javascript:void(0)" (click)="pagescroll('stylist')">See
+                  All</a></div>
+            </div>
+            <ngx-carousel [inputs]="carouselTile">
+              <ngx-item NgxCarouselItem *ngFor="let stylist_user of stylist_prof">
+                <div class="homepageitem">
+                  <div class="homeitemhover">
+                    <img img-preloader="{{stylist_user?.avatar_cloudinary_id}}" (error)="profileimgHandler($event)"
+                      alt="">
+                    <div class="overdetails">
+                      <div class="itemoverlay">
+                        <div class="itemprofile">
+                          <a href="javascript:void(0)" (click)="goToProfile(stylist_user?.id);$event.stopPropagation()">
+                            <span class="itemprofilepic"><img img-preloader="{{stylist_user?.avatar_cloudinary_id}}"
+                                (error)="profileimgHandler($event)"></span>
+                            <span class="itemprofilename">{{stylist_user?.first_name}}
+                              {{stylist_user?.last_name}}</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ngx-item>
+              <button NgxCarouselPrev class='leftRs'><img src="assets/images/left-arrow.svg"></button>
+              <button NgxCarouselNext class='rightRs'>
+                <div *ngIf="stylist_prof?.length > 4 ? true:false"><img src="assets/images/right-arrow.svg"></div>
+              </button>
+            </ngx-carousel>
+            <div *ngIf="stylist_prof && stylist_prof.length == 0">
+              <h5>No records found!</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="search_box" class="row">
+      <div class="commonpadfull serch-result" [ngClass]="{show: shouldShow || !shouldShow}">
+        <div class="row">
+          <div class="col-sm-12 col-xs-12 slidercolumn">
+            <div class="row justify-content-between align-items-center slidertitle">
+              <div class="col-9 col-sm-8 col-md-6">
+                <h1> <a href="javascript:void(0)" (click)="backclilked()"><img src="assets/images/back.png"
+                      style="width: 50px;"> </a> {{search_title | titlecase}}</h1>
+              </div>
+            </div>
+            <div *ngIf="!tag_searches && salon_searches" class="custome-list">
+              <ngx-carousel [inputs]="carouselTile">
+                <ngx-item NgxCarouselItem *ngFor="let user of feed_list">
+                  <div class="homepageitem">
+                    <div class="homeitemhover">
+                      <img img-preloader="{{user?.avatar_cloudinary_id}}" (error)="profileimgHandler($event)" alt="">
+                      <div class="overdetails">
+                        <div class="itemoverlay">
+                          <div class="itemprofile">
+                            <a href="javascript:void(0)" (click)="salonProfile(user?.id);$event.stopPropagation()">
+                              <span class="itemprofilepic"><img img-preloader="{{user?.avatar_cloudinary_id}}"
+                                  (error)="profileimgHandler($event)"></span>
+                              <span 
+                                class="itemprofilename">{{((user && user.name ) ? user.name : '') | titlecase }}</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ngx-item>
+                <button NgxCarouselPrev class='leftRs'></button>
+                <button NgxCarouselNext class='rightRs'> </button>
+              </ngx-carousel>
+            </div>
+            <div *ngIf="!tag_searches && !salon_searches " class="custome-list">
+              <ngx-carousel [inputs]="carouselTile">
+                <ngx-item NgxCarouselItem *ngFor="let user of feed_list">
+                  <div class="homepageitem">
+                    <div class="homeitemhover">
+                      <img img-preloader="{{user?.avatar_cloudinary_id}}" (error)="profileimgHandler($event)" alt="">
+                      <div class="overdetails">
+                        <div class="itemoverlay">
+                          <div class="itemprofile">
+                            <a href="javascript:void(0)" (click)="goToProfile(user?.id);$event.stopPropagation()">
+                              <span class="itemprofilepic"><img img-preloader="{{user?.avatar_cloudinary_id}}"
+                                  (error)="profileimgHandler($event)"></span>
+                              <span *ngIf="user?.account_type === 'consumer'"
+                                class="itemprofilename">{{user?.first_name| titlecase}} {{user?.last_name}}</span>
+                                <span *ngIf="user?.account_type === 'stylist'"
+                                class="itemprofilename">{{user?.first_name| titlecase}} {{user?.last_name}}</span>
+                              <span *ngIf="user?.account_type === 'ambassador'"
+                                class="itemprofilename">{{((user && user.brand && user.brand.name ) ? user.brand.name : '') | titlecase }}</span>
+                              <span *ngIf="user?.account_type === 'owner'"
+                                class="itemprofilename">{{((user && user.salon && user.salon.name ) ? user.salon.name : '') | titlecase }}</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ngx-item>
+                <button NgxCarouselPrev class='leftRs'></button>
+                <button NgxCarouselNext class='rightRs'> </button>
+              </ngx-carousel>
+            </div>
+            <div *ngIf="tag_searches && !salon_searches " class="custome-list for-mobile-not-slide">
+              <ngx-carousel [inputs]="carouselTile">
+                <ngx-item NgxCarouselItem *ngFor="let post of feed_list">
+                  <div class="homepageitem">
+                    <div class="homeitemhover">
+                      <img img-preloader="{{post?.photos[0]?.asset_url}}" (error)="imgErrorHandler($event)" alt="">
+                      <div class="overdetails">
+                        <div class="itemoverlay" (click)="postDetails(post?.id)">
+                          <div class="itemprofile">
+                            <a href="javascript:void(0)" (click)="goToProfile(post?.user?.id);$event.stopPropagation()">
+                              <span class="itemprofilepic"><img
+                                  img-preloader="{{post?.user?.avatar_cloudinary_id}}"
+                                  (error)="profileimgHandler($event)"></span>
+                              <span *ngIf="post?.user?.account_type === 'consumer'"
+                                class="itemprofilename">{{post?.user?.first_name}}
+                                {{post?.user?.last_name}}</span>
+                              <span *ngIf="post?.user?.account_type === 'stylist'"
+                                class="itemprofilename">{{post?.user?.first_name}}
+                                {{post?.user?.last_name}}</span>
+                              <span *ngIf="post?.user?.account_type === 'owner'" class="itemprofilename">{{post?.user?.salon_name
+                                | titlecase }}</span>
+                              <span *ngIf="post?.user?.account_type === 'ambassador'" class="itemprofilename">{{post?.user?.brand_name
+                                | titlecase }}</span>
+                            </a>
+                          </div>
+                          <div class="productitem">
+                            <ul>
+                              <li *ngFor="let prod of post?.products| slice:-3"><a href="javascript:void(0)"
+                                  (click)="seeProductDetails($event, prod?.id);$event.stopPropagation()">
+                                  <span *ngIf="prod?.product_image != null" class="prothumb"><img
+                                      img-preloader="{{prod?.product_image}}" (error)="imgErrorHandler($event)"></span>
+                                  <span *ngIf="prod?.name != null" class="proinfo">{{prod?.name | titlecase}}</span>
+                                  <span class="pricetag"  *ngIf="prod.price != prod.final_price"><s
+                                    style="color: #9e9697;">${{(prod?.price != null)? prod?.price: '00.00'}}</s>&#160;&#160;&#160;${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                                    <span class="pricetag"  *ngIf="prod.price == prod.final_price">${{(prod?.final_price != null)? prod?.final_price: '00.00'}}</span>
+                                </a></li>
+                            </ul>
+                          </div>
+                          <div class="hastagbottom">
+                            <div *ngIf="is_logged_in" class="hastagdetail">
+                              <div class="starred">
+                                <a *ngIf="!post?.liked_by_me" href="javascript:void(0)"
+                                  (click)="likepost(post?.id,'tag_search');$event.stopPropagation()">
+                                  <i><img src="assets/images/starred-icon.svg"></i></a>
+                                <a *ngIf="post?.liked_by_me" href="javascript:void(0)"
+                                  (click)="unlikepost(post?.id,'tag_search');$event.stopPropagation()">
+                                  <i><img src="assets/images/starred-icn-blue.svg"></i></a>
+                                <span>{{post?.likes_count}}</span>
+                              </div>
+                              <div class="starred">
+                                <a href="javascript:void(0)"
+                                  (click)="openModal(template1,post?.id);$event.stopPropagation()">
+                                  <i><img src="assets/images/chat-icon.svg"></i></a>
+                                <span>{{post?.comments_count}}</span></div>
+                            </div>
+                            <div *ngIf="!is_logged_in" class="hastagdetail">
+                              <div class="starred">
+                                <a href="javascript:void(0)" (click)="notloginstared();$event.stopPropagation()">
+                                  <i><img src="assets/images/starred-icon.svg"></i></a>
+                                <span>{{post?.likes_count}}</span>
+                              </div>
+                              <div class="starred">
+                                <a href="javascript:void(0)" (click)="notloginstared();$event.stopPropagation()">
+                                  <i><img src="assets/images/chat-icon.svg"></i></a>
+                                <span>{{post?.comments_count}}</span></div>
+                            </div>
+                            <p *ngIf="post?.photos[0]?.labels?.length != 0"><a
+                                *ngFor="let tags of post?.photos[0]?.labels| slice:0:2"><a
+                                  *ngIf="tags?.tag?.name != null">#{{tags?.tag?.name}}</a></a></p>
+                            <p *ngIf="post?.photos[0]?.labels?.length == 0">&#160;</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ngx-item>
+                <button NgxCarouselPrev class='leftRs'></button>
+                <button NgxCarouselNext class='rightRs'> </button>
+              </ngx-carousel>
+            </div>
+            <div *ngIf="show_loader" class="center-loader-main-n">
+              <app-half-circle-spinner [animationDuration]="1000" [size]="60" [color]="'#000000'">
+              </app-half-circle-spinner>
+            </div>
+            <!-- <div *ngIf="feed_list?.length != 0">
+              <pagination [totalItems]="product_totalCount" [(ngModel)]="product_page" [itemsPerPage]="product_limit"
+                [maxSize]="4" [disabled]="page_change_value" (pageChanged)="pageChanged($event)"></pagination>
+            </div> -->
+            <div *ngIf="feed_list && feed_list.length == 0">
+              <h5>No records found!</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #template1>
+      <div class="chat_window">
+        <div class="top_menu">
+          <div class="title">Comments</div>
+          <div class="close-btn" (click)="modalRef.hide()">
+            <img src="assets/images/gn_0.png" height="55px;">
+          </div>
+        </div>
+        <ul class="messages">
+          <li class="text_wrapper" *ngFor="let prod of list_comments">
+            <div class="itemprofilepost chat-contain">
+              <span class="itemprofilepic">
+                <img img-preloader="{{prod?.avatar_cloudinary_id}}" (error)="profileimgHandler($event)">
+              </span>
+              <div class="profiledesc chat-msg">
+                <span *ngIf="prod?.account_type === 'consumer'" class="itemprofilename"><a href="javascript:void(0)"
+                    style="padding-left: 0px;"
+                    (click)="goToProfiles(prod?.user_id)">{{prod?.first_name}}{{prod?.last_name}}</a></span>
+                <span *ngIf="prod?.account_type === 'stylist'" class="itemprofilename"><a href="javascript:void(0)"
+                    style="padding-left: 0px;"
+                    (click)="goToProfiles(prod?.user_id)">{{prod?.first_name}}{{prod?.last_name}}</a></span>
+                <span *ngIf="prod?.account_type === 'owner'" class="itemprofilename"><a href="javascript:void(0)"
+                    style="padding-left: 0px;"
+                    (click)="goToProfiles(prod?.user_id)">{{prod?.salon?.name | titlecase}}</a></span>
+                <span *ngIf="prod?.account_type === 'ambassador'" class="itemprofilename"><a href="javascript:void(0)"
+                    style="padding-left: 0px;"
+                    (click)="goToProfiles(prod?.user_id)">{{prod?.brand?.name | titlecase}}</a></span>
+
+                <span style="float: right; ">{{prod?.created_at | date:' MMM d, y, h:mm a'}}</span>
+                <span class="itemsubdesc">{{prod?.body}}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="bottom_wrapper clearfix">
+          <form class="d-flex-class" [formGroup]="commentSend" (ngSubmit)="commentFormSubmit()">
+            <div class="message_input_wrapper">
+              <input type="text" id="tbName" formControlName="body" class="message_input"
+                placeholder="Type your comment here..." />
+              <div *ngIf="submitted && commentSend.controls.body.invalid">
+                <div *ngIf="commentSend.hasError('required', 'body')" class="custom-alert alert alert-danger"
+                  style="margin-top: 48px;">
+                  Please enter comment !!!
+                </div>
+              </div>
+            </div>
+            <button class="send_message">
+              <div class="text">
+                Send
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <a *ngIf="search_box" href="javascript:void(0)" (click)="arrow_tops()" class="bottom-to-top">
+    <img src="assets/images/arrow-top.svg" alt="bottom-to-top">
+  </a>

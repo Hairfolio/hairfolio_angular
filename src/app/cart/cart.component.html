@@ -1,0 +1,752 @@
+<toaster-container [toasterconfig]="config" style="z-index:111111;"></toaster-container>
+<div class="container-fluid">
+    <div *ngIf="is_logged_in" class="row">
+        <div class="commonpadfull mty-center" [ngClass]="{show: shouldShow, hide: !shouldShow }">
+            <div *ngIf="cart_products?.length == 0" class="starredrowfull" style="text-align: center;">
+                <br><br><br><br>
+                <img src="assets/images/img-no-cartitems.png">
+                <h3> Your Cart Is Empty </h3>
+                <br><br><br><br><br>
+            </div>
+            <div *ngIf="cart_in_item && cart_products?.length != 0" class="starredrowfull">
+                <tabset   class="cart-tab">
+                    <tab [disabled]="payment_tab" [active]="!place_order" (select)="tabClick('place_order')">
+                        <ng-template tabHeading>
+                            <span class="numbericon">1</span> <i class="carticn"></i> Cart
+                        </ng-template>
+                        <div  class="carttablerow">
+                            <div *ngIf="cart_products?.length != 0" class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>Item</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let cart_item of cart_products;let i = index">
+                                            <td>
+                                                <div
+                                                    class="cartprothumb d-flex justify-content-center align-items-center">
+                                                    <a href="javascript:void(0)"
+                                                        (click)="seeProductDetails(cart_item?.product?.id)">
+                                                        <img img-preloader="{{cart_item?.product?.product_image?.url}}"
+                                                            style=" object-fit: contain; max-width: 75%;"
+                                                            (error)="imgErrorHandler($event)"></a>
+                                                </div>
+                                            </td>
+                                            <td class="title" style="line-height: 34px;">
+                                                <strong>{{cart_item?.product?.name.length > 55 ?
+                                                    cart_item?.product?.name.substr(0,55).concat("..."):
+                                                    cart_item?.product?.name | titlecase}}</strong>
+                                                <div class="infodiv">
+                                                    <span
+                                                        *ngIf="cart_item?.product?.product_brand != null">{{cart_item?.product?.product_brand?.title.length > 20 ?cart_item?.product?.product_brand?.title.substr(0,20).concat("..."):cart_item?.product?.product_brand?.title}}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <strong class="flex-items"><span class="minus-prisusm"
+                                                        *ngIf="cart_item?.product.price != cart_item?.product.final_price"><s
+                                                            style="color: #9e9697;">${{(cart_item?.product?.price != null)? cart_item?.product?.price: '00.00'}}</s>
+                                                        &#160;&#160;</span><span style="color: #e74c3c;"
+                                                        *ngIf="cart_item?.product.price != cart_item?.product.final_price"
+                                                        class="main-pridsnkl">
+                                                        ${{(cart_item?.product?.final_price != null)? cart_item?.product?.final_price: '00.00'}}</span>
+                                                    <span
+                                                        *ngIf="cart_item?.product.price == cart_item?.product.final_price"
+                                                        class="main-pridsnkl">
+                                                        ${{(cart_item?.product?.final_price != null)? cart_item?.product?.final_price: '00.00'}}</span>&#160;&#160;
+                                                    <a style="color: #e74c3c;font-size: small;"
+                                                        *ngIf="cart_item?.product.discount_percentage != null">{{cart_item?.product?.discount_percentage}}%
+                                                        OFF </a>
+                                                </strong>
+                                            </td>
+                                            <!-- <td>${{cart_item?.product?.final_price}}</td> -->
+                                            <td>
+                                                <div class="counter">
+                                                    <button (click)="decrement(i)" class="minus"
+                                                        [disabled]="(cart_item?.units>1)? false:true">-</button>
+                                                    <input type="text" value="{{cart_item?.units}}" class="form-control"
+                                                        (ngModelChange)="onChange($event)" numbersOnly readonly="true">
+                                                    <button (click)="increment(i)" class="plus"
+                                                        [disabled]="cart_item?.units>=cart_item?.product?.quantity">+</button>
+                                                </div>
+                                            </td>
+                                            <td>${{cart_item?.product?.final_price * cart_item?.units| number : '1.2-2'}}
+                                            </td>
+                                            <td> <button (click)="updatecart(cart_item?.product?.id,cart_item?.units)"
+                                                    type="button" class="{{i==disable_flag ? 'btnblack':'btngrays'}}"
+                                                    [disabled]="i==disable_flag ?false:true">
+                                                    update cart</button></td>
+                                            <td class="text-right" (click)="removeItem(cart_item?.product_id)">
+                                                <i class="close"><img src="assets/images/close-icn-sm.svg"></i>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6">
+                                                <table style="width: 100%">
+                                                    <tr>
+                                                        <td class="text-left">
+                                                            <div class="from-group">
+                                                                <label *ngIf="!select_coupon"><a
+                                                                        href="javascript:void(0)"
+                                                                        (click)="orderModal(template3,'Coupon Code');"><b><u>Coupon
+                                                                                code</u></b>
+                                                                    </a> (Applied at checkout)</label>
+                                                                <label *ngIf="select_coupon">Coupon code </label> <br>
+                                                                <input *ngIf="select_coupon" type="text"
+                                                                    class="form-control" value="{{coupon_name}}"
+                                                                    disabled>&#160;<a *ngIf="select_coupon"
+                                                                    href="javascript:void(0)"
+                                                                    (click)="remove_coupon();"><img
+                                                                        src="assets/images/error-validate-icn.svg"></a>
+                                                                <span *ngIf="select_coupon"
+                                                                    style=" color: #41aa40; font-size: 15px;"><br>
+                                                                    Coupon code Apply Successfully !!! </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <div class="discountright">
+                                                                <span>Total item in cart :
+                                                                    <strong>{{cart_qty}}</strong></span>
+                                                                <span *ngIf="select_coupon">Applied Coupon Discount:
+                                                                    <strong>${{promocode_dis| number : '1.2-2'}}</strong></span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" class="total">
+                                                <span>Total :<strong>${{cart_total| number : '1.2-2'}}</strong></span>
+                                                <button (click)="nextTab('place_order')" type="button"
+                                                    class="{{i==disable_flag ? 'btnblack':'btngrays'}}"
+                                                    [disabled]="i==disable_flag ?false:true">Place
+                                                    Order</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </tab>
+                    <tab [disabled]="!place_order" [active]="place_order && !tab_address"
+                        (select)="tabClick('tab_address')">
+                        <ng-template tabHeading><span class="numbericon">2</span><i class="addressicn"></i> Address
+                        </ng-template>
+                        <div class="fade-effects">
+                            <div class="addresfrm">
+                                <div class="d-flex align-items-start justify-content-between flex-wrap">
+                                    <div class="addressinput">
+                                        <h5>Shipping Information</h5>
+                                        <form [formGroup]="addressForm"
+                                            (ngSubmit)="edit_clilk ? onEditSubmit(this.single_add?.id) : adressFormSubmit()">
+                                            <div class="from-group">
+                                                <label>Email</label>
+                                                <div class="frmfields">
+                                                    <input type="text" class="form-control" formControlName="email"
+                                                        placeholder="Email">
+                                                    <div *ngIf="submitted && addressForm.controls.email.invalid">
+                                                        <div *ngIf="addressForm.hasError('required', 'email')"
+                                                            class="alert alert-danger">
+                                                            Please enter Email.
+                                                        </div>
+                                                        <div *ngIf="!addressForm.hasError('required', 'email') && 
+                                                                            (addressForm.hasError('pattern', 'email') || addressForm.hasError('email', 'email'))"
+                                                            class="alert alert-danger">
+                                                            Email is not valid.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <div class="halfwidth">
+                                                    <label>First Name</label>
+                                                    <div class="frmfields">
+                                                        <input type="text" class="form-control"
+                                                            formControlName="first_name" placeholder="First Name">
+                                                        <div
+                                                            *ngIf="submitted && addressForm.controls.first_name.invalid">
+                                                            <div *ngIf="addressForm.hasError('required', 'first_name')"
+                                                                class="alert alert-danger">
+                                                                Please enter First Name.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'first_name') && addressForm.controls['first_name'].errors?.whitespace"
+                                                                class="alert alert-danger">
+                                                                Please enter First Name.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'first_name') && !addressForm.controls['first_name'].errors?.whitespace && addressForm.controls['first_name'].errors?.lengthCheck"
+                                                                class="alert alert-danger">
+                                                                First Name should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'first_name') && !addressForm.controls['first_name'].errors?.whitespace && !addressForm.controls['first_name'].errors?.lengthCheck && addressForm.hasError('minlength', 'first_name')"
+                                                                class="alert alert-danger">
+                                                                First Name should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'first_name') && !addressForm.controls['first_name'].errors?.whitespace && !addressForm.controls['first_name'].errors?.lengthCheck && !addressForm.hasError('minlength', 'first_name') && addressForm.hasError('pattern', 'first_name')"
+                                                                class="alert alert-danger">
+                                                                Enter only alphabatic.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'first_name') && !addressForm.controls['first_name'].errors?.whitespace && !addressForm.controls['first_name'].errors?.lengthCheck && !addressForm.hasError('minlength', 'first_name') && !addressForm.hasError('pattern', 'first_name') && addressForm.hasError('maxlength', 'first_name')"
+                                                                class="alert alert-danger">
+                                                                First Name can be max 30 characters long.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="halfwidth">
+                                                    <label>Last Name</label>
+                                                    <div class="frmfields">
+                                                        <input type="text" class="form-control"
+                                                            formControlName="last_name" placeholder="Last Name">
+                                                        <div
+                                                            *ngIf="submitted && addressForm.controls.last_name.invalid">
+                                                            <div *ngIf="addressForm.hasError('required', 'last_name')"
+                                                                class="alert alert-danger">
+                                                                Please enter Last Name.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'last_name') && addressForm.controls['last_name'].errors?.whitespace"
+                                                                class="alert alert-danger">
+                                                                Please enter Last Name.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'last_name') && !addressForm.controls['last_name'].errors?.whitespace && addressForm.controls['last_name'].errors?.lengthCheck"
+                                                                class="alert alert-danger">
+                                                                Last Name should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'last_name') && !addressForm.controls['last_name'].errors?.whitespace && !addressForm.controls['last_name'].errors?.lengthCheck && !addressForm.hasError('required', 'last_name') && addressForm.hasError('minlength', 'last_name')"
+                                                                class="alert alert-danger">
+                                                                Last Name should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'last_name') && !addressForm.controls['last_name'].errors?.whitespace && !addressForm.controls['last_name'].errors?.lengthCheck && !addressForm.hasError('minlength', 'last_name') && addressForm.hasError('pattern', 'last_name')"
+                                                                class="alert alert-danger">
+                                                                Enter only alphabatic.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'last_name') && !addressForm.controls['last_name'].errors?.whitespace && !addressForm.controls['last_name'].errors?.lengthCheck && !addressForm.hasError('minlength', 'last_name') && !addressForm.hasError('pattern', 'last_name') && addressForm.hasError('maxlength', 'last_name')"
+                                                                class="alert alert-danger">
+                                                                Last Name can be maximum 30 characters long.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <label>Address</label>
+                                                <div class="frmfields">
+                                                    <textarea class="form-control" formControlName="user_address"
+                                                        placeholder="Address"></textarea>
+                                                    <div *ngIf="submitted && addressForm.controls.user_address.invalid">
+                                                        <div *ngIf="addressForm.hasError('required', 'user_address')"
+                                                            class="alert alert-danger">
+                                                            Please enter Address.
+                                                        </div>
+                                                        <div *ngIf="!addressForm.hasError('required', 'user_address') && addressForm.controls['user_address'].errors?.whitespace"
+                                                            class="alert alert-danger">
+                                                            Please enter Address.
+                                                        </div>
+                                                        <div *ngIf="!addressForm.hasError('required', 'user_address') && !addressForm.controls['user_address'].errors?.whitespace && addressForm.controls['user_address'].errors?.lengthCheck"
+                                                            class="alert alert-danger">
+                                                            Address should be minimum 2 latters.
+                                                        </div>
+                                                        <div *ngIf="!addressForm.hasError('required', 'user_address') && !addressForm.controls['user_address'].errors?.whitespace && !addressForm.controls['user_address'].errors?.lengthCheck && addressForm.hasError('minlength', 'user_address')"
+                                                            class="alert alert-danger">
+                                                            Address should be minimum 2 latters.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <div class="halfwidth">
+                                                    <label>Phone</label>
+                                                    <div class="frmfields">
+                                                        <input type="text" class="form-control" formControlName="phone"
+                                                            placeholder="Phone">
+                                                        <div *ngIf="submitted && addressForm.controls.phone.invalid">
+                                                            <div *ngIf="addressForm.hasError('required', 'phone')"
+                                                                class="alert alert-danger">
+                                                                Please enter Phone.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'phone')  && addressForm.hasError('pattern', 'phone')"
+                                                                class="alert alert-danger">
+                                                                Enter only numeric value.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'phone')  && !addressForm.hasError('pattern', 'phone') && addressForm.hasError('minlength', 'phone')"
+                                                                class="alert alert-danger">
+                                                                Phone number should be 8 digits.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'phone')  && !addressForm.hasError('pattern', 'phone') &&  !addressForm.hasError('minlength', 'phone') && 
+                                                            addressForm.hasError('maxlength', 'phone')"
+                                                                class="alert alert-danger">
+                                                                Phone number should be max 16 digits.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="halfwidth">
+                                                    <label>City</label>
+                                                    <div class="frmfields">
+                                                        <input type="text" class="form-control" formControlName="city"
+                                                            placeholder="City">
+                                                        <div *ngIf="submitted && addressForm.controls.city.invalid">
+                                                            <div *ngIf="addressForm.hasError('required', 'city')"
+                                                                class="alert alert-danger">
+                                                                Please enter City.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'city') && addressForm.controls['city'].errors?.whitespace"
+                                                                class="alert alert-danger">
+                                                                Please enter City.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'city') && !addressForm.controls['city'].errors?.whitespace && addressForm.controls['city'].errors?.lengthCheck"
+                                                                class="alert alert-danger">
+                                                                City name should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'city') && !addressForm.controls['city'].errors?.whitespace && !addressForm.controls['city'].errors?.lengthCheck && addressForm.hasError('minlength', 'city')"
+                                                                class="alert alert-danger">
+                                                                City name should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'city') && !addressForm.controls['city'].errors?.whitespace && !addressForm.controls['city'].errors?.lengthCheck && !addressForm.hasError('minlength', 'city') && addressForm.hasError('pattern', 'city')"
+                                                                class="alert alert-danger">
+                                                                Enter only alphabatic.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'city') && !addressForm.controls['city'].errors?.whitespace && !addressForm.controls['city'].errors?.lengthCheck && !addressForm.hasError('minlength', 'city') && !addressForm.hasError('pattern', 'city') && addressForm.hasError('maxlength', 'city')"
+                                                                class="alert alert-danger">
+                                                                City can be maximum 30 characters long.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <div class="halfwidth">
+                                                    <label>Landmark</label>
+                                                    <div class="frmfields">
+                                                        <input type="text" class="form-control"
+                                                            formControlName="landmark" placeholder="Landmark">
+                                                        <div *ngIf="submitted && addressForm.controls.landmark.invalid">
+                                                            <div *ngIf="addressForm.hasError('required', 'landmark')"
+                                                                class="alert alert-danger">
+                                                                Please enter Landmark.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'landmark') && addressForm.controls['landmark'].errors?.whitespace"
+                                                                class="alert alert-danger">
+                                                                Please enter Landmark.
+                                                                <!-- {{ addressForm.controls['landmark'].errors.trimError.value }} -->
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'landmark') && !addressForm.controls['landmark'].errors?.whitespace && addressForm.controls['landmark'].errors?.lengthCheck"
+                                                                class="alert alert-danger">
+                                                                Landmark shoou sssssssssss.
+                                                                <!-- {{ addressForm.controls['landmark'].errors.trimError.value }} -->
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'landmark') && !addressForm.controls['landmark'].errors?.whitespace && addressForm.hasError('minlength', 'landmark')"
+                                                                class="alert alert-danger">
+                                                                Landmark should be minimum 2 latters.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'landmark') && !addressForm.controls['landmark'].errors?.whitespace && !addressForm.hasError('minlength', 'landmark') && addressForm.hasError('pattern', 'landmark')"
+                                                                class="alert alert-danger">
+                                                                Enter only alphabatic.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'landmark') && !addressForm.controls['landmark'].errors?.whitespace && !addressForm.hasError('minlength', 'landmark') && !addressForm.hasError('pattern', 'landmark') && addressForm.hasError('maxlength', 'landmark')"
+                                                                class="alert alert-danger">
+                                                                Landmark can be maximum 100 characters long.
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="halfwidth">
+                                                    <label>Zipcode</label>
+                                                    <div class="frmfields">
+                                                        <input type="text" class="form-control"
+                                                            formControlName="zip_code" placeholder="Zipcode">
+                                                        <div *ngIf="submitted && addressForm.controls.zip_code.invalid">
+                                                            <div *ngIf="addressForm.hasError('required', 'zip_code')"
+                                                                class="alert alert-danger">
+                                                                Please enter Zipcode.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'zip_code')  && addressForm.hasError('pattern', 'zip_code')"
+                                                                class="alert alert-danger">
+                                                                Enter only numeric value.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'zip_code') && !addressForm.hasError('pattern', 'zip_code')&& addressForm.hasError('minlength', 'zip_code')"
+                                                                class="alert alert-danger">
+                                                                Zipcode should be 5 digits.
+                                                            </div>
+                                                            <div *ngIf="!addressForm.hasError('required', 'zip_code') && !addressForm.hasError('pattern', 'zip_code') &&  !addressForm.hasError('minlength', 'zip_code') && 
+                                                            addressForm.hasError('maxlength', 'zip_code')"
+                                                                class="alert alert-danger">
+                                                                Zipcode should be maximum 6 latters.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="!edit_clilk" class="from-group">
+                                                <input type="submit" value="Save"
+                                                    class="{{default_adress?.length == 0 ? 'btnblack':'btngrays'}}"
+                                                    [disabled]="default_adress?.length != 0">
+                                            </div>
+                                            <div *ngIf="edit_clilk" class="from-group">
+                                                <input type="submit" value="update address" class="btnblack">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="addressinput">
+                                        <h5>Ship to Address</h5>
+                                        <div class="addressrow d-flex justify-content-between flex-wrap"
+                                            *ngIf="default_adress?.length != 0">
+                                            <div class="addreleft">
+                                                <strong>{{default_adress?.first_name |titlecase}}
+                                                    {{default_adress?.last_name | titlecase}}</strong>
+                                                {{default_adress?.user_address}} <br>
+                                                {{default_adress?.landmark}} &#160;{{default_adress?.zip_code}} <br>
+                                                {{default_adress?.city}}
+                                            </div>
+                                            <div class="addbtnright">
+                                                <button (click)="edit_address(default_adress?.id,'edit')"
+                                                    class="btngray">Edit</button>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="default_adress?.length == 0"
+                                            class=" d-flex justify-content-between flex-wrap">
+                                            <strong> Not avilable any shipping
+                                                address</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-xl-end justify-content-start">
+                                    <button *ngIf="default_adress?.length != 0" (click)="nextTab('tab_address')"
+                                        type="button" class="btnblack">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </tab>
+                    <tab [disabled]="!tab_address" [active]="tab_address && !order_summery"
+                        (select)="tabClick('order_summery')">
+                        <ng-template tabHeading><span class="numbericon">3</span>
+                            <i class="ordericn"></i> Order
+                            Summary </ng-template>
+                        <div class="fade-effects">
+                            <div class="carttablerow ordertblrow">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>&nbsp;</th>
+                                                <th>Item</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let cart_item of cart_products;let i = index">
+                                                <td>
+                                                    <div
+                                                        class="cartprothumb d-flex justify-content-center align-items-center">
+                                                        <a href="javascript:void(0)"
+                                                            (click)="seeProductDetails(cart_item?.product?.id)">
+                                                            <img img-preloader="{{cart_item?.product?.product_image?.url}}"
+                                                                style=" object-fit: contain; max-width: 75%;"
+                                                                (error)="imgErrorHandler($event)"></a>
+                                                    </div>
+                                                </td>
+                                                <td class="title" style="line-height: 34px;">
+                                                    <strong>{{cart_item?.product?.name.length > 55 ?
+                                                                cart_item?.product?.name.substr(0,55).concat("..."):
+                                                                cart_item?.product?.name}}</strong>
+                                                    <div class="infodiv">
+                                                        <span
+                                                            *ngIf="cart_item?.product?.product_brand != null">{{cart_item?.product?.product_brand?.title}}</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong class="flex-items"><span class="minus-prisusm"
+                                                            *ngIf="cart_item?.product.price != cart_item?.product.final_price"><s
+                                                                style="color: #9e9697;">${{(cart_item?.product?.price != null)? cart_item?.product?.price: '00.00'}}</s>
+                                                            &#160;&#160;</span><span style="color: #e74c3c;"
+                                                            *ngIf="cart_item?.product.price != cart_item?.product.final_price"
+                                                            class="main-pridsnkl">
+                                                            ${{(cart_item?.product?.final_price != null)? cart_item?.product?.final_price: '00.00'}}</span>
+                                                        <span
+                                                            *ngIf="cart_item?.product.price == cart_item?.product.final_price"
+                                                            class="main-pridsnkl">
+                                                            ${{(cart_item?.product?.final_price != null)? cart_item?.product?.final_price: '00.00'}}</span>&#160;&#160;
+                                                        <a style="color: #e74c3c;font-size: small;"
+                                                            *ngIf="cart_item?.product.discount_percentage != null">{{cart_item?.product?.discount_percentage}}%
+                                                            OFF </a>
+                                                    </strong>
+                                                </td>
+                                                <td>
+                                                    <strong>{{cart_item?.units}}</strong>
+                                                </td>
+                                                <td>${{cart_item?.product?.final_price * cart_item?.units| number : '1.2-2'}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="6" class="text-right">
+                                                    <div class="discountright">
+                                                        <span *ngIf="select_coupon">Applied Coupon Discount :
+                                                            <strong>${{promocode_dis| number : '1.2-2'}}</strong></span>
+                                                        <span>Total :
+                                                            <strong>${{cart_total| number : '1.2-2'}}</strong></span>
+                                                        <span><img src="assets/images/wallet.png"
+                                                                style="height: 22px;">&#160; Wallet Balance :
+                                                            <strong>${{wallet_data?.amount| number : '1.2-2'}}</strong></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="6" class="total">
+                                                    <span>Total Payable Amount :
+                                                        <strong>${{pay_total| number : '1.2-2'}}</strong></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="addressoreder d-flex justify-content-between flex-wrap align-items-end">
+                                <div class="addreleft">
+                                    <h5>Ship to Address</h5>
+                                    <div *ngFor="let address of address_list">
+                                        <div *ngIf="address?.default_address == true">
+                                            <strong>{{address?.first_name |titlecase}}
+                                                {{address?.last_name | titlecase}}</strong>
+                                            {{address?.user_address}} <br>
+                                            {{address?.landmark}} ,{{address?.zip_code}} <br>
+                                            {{address?.city}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="addbtnright">
+                                    <button type="button" (click)="continue_shopping()" class="btnblack">Continue
+                                        Shopping</button>
+                                    <button *ngIf="!wallet" (click)="nextTab('order_summery')" type="button"
+                                        class="btnblack">Checkout</button>
+                                    <button *ngIf="wallet" (click)="order_finalpay('wallet')" type="button"
+                                        class="btnblack">Pay Wallet</button>
+                                </div>
+                            </div>
+                        </div>
+                    </tab>
+                    <tab [disabled]="!order_summery" [active]="order_summery && !payment_tab"
+                        (select)="tabClick('payment_tab')">
+                        <ng-template tabHeading><span class="numbericon">4</span>
+                            <i class="paymenticn"></i> Payment
+                        </ng-template>
+                        <span>Total Payable Amount : <strong>${{pay_total| number : '1.2-2'}}</strong></span>
+                        <div class="fade-effects">
+                            <div class="addresfrm">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                    <div class="addressinput">
+                                        <form [formGroup]="cardForm" (ngSubmit)="cardFormSubmit()">
+                                            <div *ngIf="error" class="alert alert-danger">
+                                                {{error}}
+                                            </div>
+                                            <div class="from-group">
+                                                <label>Card Number</label>
+                                                <div class="frmfields">
+                                                    <input type="text" class="form-control" formControlName="number"
+                                                        placeholder="Card Number">
+                                                    <div *ngIf="payment_submit && cardForm.controls.number.invalid">
+                                                        <div *ngIf="cardForm.hasError('required', 'number')"
+                                                            class="alert alert-danger">
+                                                            Please enter Card Number.
+                                                        </div>
+                                                        <div *ngIf="!cardForm.hasError('required', 'number')  && cardForm.hasError('pattern', 'number')"
+                                                            class="alert alert-danger">
+                                                            Enter only numeric value.
+                                                        </div>
+                                                        <div *ngIf="!cardForm.hasError('required', 'number')  && !cardForm.hasError('pattern', 'number') && cardForm.hasError('minlength', 'number')"
+                                                            class="alert alert-danger">
+                                                            Card Number should be 16 digits.
+                                                        </div>
+                                                        <div *ngIf="!cardForm.hasError('required', 'number')  && !cardForm.hasError('pattern', 'number') &&  !cardForm.hasError('minlength', 'number') && 
+                                                        cardForm.hasError('maxlength', 'number')"
+                                                            class="alert alert-danger">
+                                                            Card Number should be max 16 digits.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <div class="halfwidth">
+                                                    <label>Month</label>
+                                                    <div class="frmfields">
+                                                        <input class="form-control" formControlName="expiry_month"
+                                                            placeholder="Month" type="number" max="12" min="01"
+                                                            onkeypress="if(this.value.length==2) return false;">
+                                                        <div
+                                                            *ngIf="payment_submit && cardForm.controls.expiry_month.invalid">
+                                                            <div *ngIf="cardForm.hasError('required', 'expiry_month')"
+                                                                class="alert alert-danger">
+                                                                Please enter Month.
+                                                            </div>
+                                                            <div *ngIf="!cardForm.hasError('required', 'expiry_month')  && cardForm.hasError('pattern', 'expiry_month')"
+                                                                class="alert alert-danger">
+                                                                Enter only numeric value.
+                                                            </div>
+                                                            <div *ngIf="!cardForm.hasError('required', 'expiry_month')  && !cardForm.hasError('pattern', 'expiry_month')  && 
+                                                                cardForm.hasError('maxlength', 'number')"
+                                                                class="alert alert-danger">
+                                                                Month value should be max 2 digits.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="halfwidth">
+                                                    <label>Year</label>
+                                                    <div class="frmfields">
+                                                        <input class="form-control" type="number" max="2036"
+                                                            formControlName="expiry_year" placeholder="Year" min="2018"
+                                                            onkeypress="if(this.value.length==4) return false;">
+                                                        <div *ngIf="payment_submit && cardForm.controls.expiry_year.invalid">
+                                                            <div *ngIf="cardForm.hasError('required', 'expiry_year')"
+                                                                class="alert alert-danger">
+                                                                Please enter Year.
+                                                            </div>
+                                                            <div *ngIf="!cardForm.hasError('required', 'expiry_year')  && cardForm.hasError('pattern', 'expiry_year')"
+                                                                class="alert alert-danger">
+                                                                Enter only numeric value.
+                                                            </div>
+                                                            <div *ngIf="!cardForm.hasError('required', 'expiry_year')  && !cardForm.hasError('pattern', 'expiry_year') && cardForm.hasError('minlength', 'expiry_year')"
+                                                                class="alert alert-danger">
+                                                                Year value should be min 4 digits.
+                                                            </div>
+                                                            <div *ngIf="!cardForm.hasError('required', 'expiry_year')  && !cardForm.hasError('pattern', 'expiry_year') &&  !cardForm.hasError('minlength', 'expiry_year') && 
+                                                                cardForm.hasError('maxlength', 'expiry_year')"
+                                                                class="alert alert-danger">
+                                                                Year value should be max 4 digits.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <label>CVV</label>
+                                                <div class="frmfields">
+                                                    <input class="form-control" type="text" formControlName="cvc"
+                                                        placeholder="CVV">
+                                                    <!-- onkeypress="if(this.value.length==3) return false;"> -->
+                                                    <div *ngIf="payment_submit && cardForm.controls.cvc.invalid">
+                                                        <div *ngIf="cardForm.hasError('required', 'cvc')"
+                                                            class="alert alert-danger">
+                                                            Please enter CVV.
+                                                        </div>
+                                                        <div *ngIf="!cardForm.hasError('required', 'cvc')  && cardForm.hasError('pattern', 'cvc')"
+                                                            class="alert alert-danger">
+                                                            Enter only numeric value.
+                                                        </div>
+                                                        <div *ngIf="!cardForm.hasError('required', 'cvc')  && !cardForm.hasError('pattern', 'cvc') && cardForm.hasError('minlength', 'cvc')"
+                                                            class="alert alert-danger">
+                                                            CVV value should be min 3 digits.
+                                                        </div>
+                                                        <div *ngIf="!cardForm.hasError('required', 'cvc')  && !cardForm.hasError('pattern', 'cvc') &&  !cardForm.hasError('minlength', 'cvc') && 
+                                                        cardForm.hasError('maxlength', 'cvc')"
+                                                            class="alert alert-danger">
+                                                            CVV value should be max 3 digits.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="from-group">
+                                                <input type="submit" value="Pay" class="btnblack">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="addressinput mb-0">
+                                        <img src="assets/images/card-payment-pic.svg">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </tab>
+                    <tab [disabled]="!payment_tab" [active]="payment_tab">
+                        <ng-template tabHeading><span class="numbericon">5</span> <i class="confimricn"></i> Confirm
+                            Order</ng-template>
+                        <div *ngIf="order_status" class="fade-effects">
+                            <div class="confirmorder">
+                                <div class="alert alert-success">
+                                    Your order has been processed successfully
+                                </div>
+                                <div class="orderplaceinfo">
+                                    <h1>Order #{{booking_order.order_number}} </h1>
+                                    <span>Placed Ordered {{booking_order?.created_at | date:'d MMM y, h:mm a'}}</span>
+                                </div>
+                                <div class="trackshipinfo d-flex justify-content-between flex-wrap">
+                                    <div class="trackinfoleft">
+                                        <h2>Tracking Information</h2>
+                                        <div class="trackinfocol">
+                                            <div class="trackingdate d-flex justify-content-between">
+                                                <strong>Booking Date</strong>
+                                                <strong>Status</strong>
+                                            </div>
+                                            <div class="trackingdate d-flex justify-content-between">
+                                                <strong>{{booking_order?.created_at | date:'d MMM y, h:mm a'}}</strong>
+                                                <span>{{booking_order.shipping_status | titlecase}}</span>
+                                            </div>
+                                            <a href="javascript:void(0)" (click)="continue_shopping()"><span>Continue
+                                                    Shopping <img src="assets/images/readmorearrow.svg"> </span></a>
+                                        </div>
+
+                                    </div>
+                                    <div class="shipinforight">
+                                        <h2>Shipping Information</h2>
+                                        <div class="d-flex justify-content-between flex-wrap">
+                                            <div class="addreleft">
+                                                <h5>Shipping Address</h5>
+                                                <strong>{{booking_order?.address?.first_name |titlecase}}
+                                                    {{booking_order?.address?.last_name | titlecase}}</strong>
+                                                {{booking_order?.address?.user_address}} <br>
+                                                {{booking_order?.address?.landmark}}
+                                                ,{{booking_order?.address?.zip_code}}
+                                                <br>
+                                                {{booking_order?.address?.city}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </tab>
+                </tabset>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+
+    <ng-template #template3>
+        <div class="chat_window_list" style="max-width: 400px;">
+            <div class="top_menu">
+                <div class="title">Coupon Code</div>
+                <div class="close-btn">
+                    <a href="javascript:void(0)" (click)="modalRef.hide()"> <img src="assets/images/gn_0.png"
+                            height="55px;"> </a>
+                </div>
+            </div>
+            <div class="text-align-m-ceneter" *ngIf="get_coupon?.length != 0">
+                <ul class="messages">
+                    <li class="text_wrapper d-flex flex-wrap align-items-center" *ngFor="let coupon of get_coupon">
+                        <input type="radio" style="height: 20px;width: 23px;" name="list_name" value=""
+                            (change)="coupon_sel(coupon)"
+                            checked="{{ ( coupon?.coupon_code == coupon_name ) ? 'checked' : ''}}">
+                        <strong>&#160;{{coupon?.coupon_code}}</strong>
+                        <br><br>
+                    </li>
+                </ul>
+                <button (click)="apply_cupon()" [disabled]="(coupon_name == '')? true:false" type="button"
+                    class="{{coupon_name == ''? 'btngrays':'btnblack'}}" 
+                >Apply Coupon</button>
+            </div>
+            <ul *ngIf="get_coupon?.length == 0" class="messages text-center">
+                <strong> No coupon Avilable</strong>
+            </ul>
+        </div>
+    </ng-template>

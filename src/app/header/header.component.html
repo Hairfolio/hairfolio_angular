@@ -1,0 +1,205 @@
+<header class="d-flex storelanding" [ngClass]="{'stickey-header': isScrolled}">
+    <div class="container-fluid header-con">
+        <div class="row justify-content-between align-items-center">
+            <div class="listitemcol">
+                <ul>
+                    <li>
+                        <a routerLink="/home" routerLinkActive="active" (click)="searchEnableclick($event, 'home')">
+                            <i class="feedicn"></i>
+                            <span>Feed</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a routerLink="/storelanding" routerLinkActive="active" (click)="storeClick()">
+                            <i class="storeicn"></i>
+                            <span>Store</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="logo">
+                <a href="javascript:void(0)" routerLink="/home" (click)="searchEnableclick($event, 'home')"><img
+                        src="assets/images/logo.svg"></a>
+            </div>
+            <div class="listitemrightcol">
+                <ul>
+                    <li *ngIf="searchopens">
+                        <a *ngIf="!static_search" (click)="searchclick($event)" disabled="true">
+                            <i class="searchicn"></i>
+                            <span>Search</span>
+                        </a>
+                        <a *ngIf="static_search" class="active">
+                            <i class="searchicn"></i>
+                            <span>Search</span>
+                        </a>
+                    </li>
+                    <li class="searchheight" *ngIf="!searchopens">
+
+                    </li>
+                    <li>
+                        <a routerLink="/blog" routerLinkActive="active" (click)="searchDisableclick($event)">
+                            <i class="blogicn"></i>
+                            <span>Blog</span>
+                        </a>
+                    </li>
+                    <li dropdown>
+                        <a class="join-login-btn" *ngIf="!is_logged_in" (click)="packageshow($event)"
+                            [ngClass]="{'active': logigpopup}">
+                            <i class="loginicn"></i>
+                            <span>Join/Login</span>
+                        </a>
+                        <a *ngIf="is_logged_in" (click)="logoutshow($event)" dropdownToggle>
+                            <i class="loginicn"></i>
+                            <span>Profile</span>
+                        </a>
+                        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu"
+                            aria-labelledby="button-basic">
+                            <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)"
+                                    (click)="goProfile()">My Profile</a></li>
+                            <li *ngIf="facebook_ids == null && instagram_ids == null" role="menuitem"><a class="dropdown-item" href="javascript:void(0)"
+                                    (click)="chnage_pass()">Change Password</a></li>
+                            <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)"
+                                    (click)="doLogout()">Logout</a>
+                        </ul>
+                    </li>
+                    <li *ngIf="is_logged_in">
+                        <a routerLink="/cart" routerLinkActive="active" (click)="searchDisableclick($event)">
+                            <i class="carticn"></i>
+                            <span class="formobile">Cart <span
+                                    class="number-cart-askjh">({{cart_product_count}})</span></span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="loginpopdropdown" *ngIf="logigpopup && (form_filled!=[])">
+                    <div class="close-btn-lobin-popup" (click)="packageshow($event)">
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <h3>Join Hairfolio</h3>
+                    <p>Follow your favorite artists, promote their work and book your own.</p>
+                    <div class="signupbtn">
+                        <a [routerLink]="['/signup']" class="btngray">Sign Up</a>
+                    </div>
+                    <div *ngIf="!forgetpopup" class="loginfrm">
+                        <h3>Login</h3>
+                        <form [formGroup]="loginForm" (ngSubmit)="loginFormSubmit()">
+                            <div *ngIf="error" class="alert alert-danger">
+                                {{error}}
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <div class="frmfields">
+                                    <input type="email" class="form-control" formControlName="email" placeholder="Email"
+                                        (input)="inputText($event)">
+                                    <div *ngIf="submitted && loginForm.controls.email.invalid">
+                                        <div *ngIf="loginForm.hasError('required','email')" class="alert alert-danger">
+                                            Email is required.
+                                        </div>
+                                        <div *ngIf="!loginForm.hasError('required','email') && (loginForm.hasError('pattern','email') || loginForm.hasError('email','email'))"
+                                            class="alert alert-danger">
+                                            Please enter valid email.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div class="frmfields">
+                                    <input type="password" class="form-control" formControlName="password"
+                                        placeholder="Password">
+                                    <div *ngIf="submitted && loginForm.controls.password.invalid">
+                                        <div *ngIf="loginForm.hasError('required','password')"
+                                            class="alert alert-danger">
+                                            Password is required.
+                                        </div>
+                                        <div *ngIf="!loginForm.hasError('required','password') && loginForm.hasError('minlength','password')"
+                                            class="alert alert-danger">
+                                            Password should be minimum 6 charecters.
+                                        </div>
+                                        <div *ngIf="!loginForm.hasError('required','password') && !loginForm.hasError('minlength','password') && loginForm.hasError('maxlength','password')"
+                                            class="alert alert-danger">
+                                            Password should be maximum 16 charecters.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group text-right demp">
+                                <a href="javascript:void(0)" (click)="loginhere()">Forgot Password?</a>
+                            </div>
+                            <div class="loginbtn">
+                                <input type="submit" value="Login" class="btn btn-primary">
+                            </div>
+                        </form>
+                    </div>
+                    <div *ngIf="forgetpopup" class="loginfrm">
+                        <h3>Forget Password</h3>
+                        <form [formGroup]="forgetForm" (ngSubmit)="forgetpasssubmit()">
+                            <div *ngIf="error" class="alert alert-danger">
+                                {{error}}
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <div class="frmfields">
+                                    <input type="email" class="form-control" formControlName="email" placeholder="Email"
+                                        (input)="inputText($event)">
+                                    <div *ngIf="form_submitted && forgetForm.controls.email.invalid">
+                                        <div *ngIf="forgetForm.hasError('required','email')" class="alert alert-danger">
+                                            Email is required.
+                                        </div>
+                                        <div *ngIf="!forgetForm.hasError('required','email') && (loginForm.hasError('pattern','email') || loginForm.hasError('email','email'))"
+                                            class="alert alert-danger">
+                                            Please enter valid email.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group text-right demp">
+                                <label> Have an account? <a href="javascript:void(0)"
+                                        (click)="loginhere()">Login</a></label>
+                            </div>
+                            <div class="loginbtn">
+                                <input type="submit" value="Forget password" class="btn btn-primary">
+                            </div>
+                        </form>
+                    </div>
+                    <div *ngIf="!forgetpopup" class="text-center">
+                        <div class="divideror"><span _ngcontent-c8="">or</span></div>
+                    </div>
+                    <div *ngIf="!forgetpopup" class="d-flex social-login justify-content-between">
+                        <button style="cursor: pointer;" class="facebooklog" type="button"
+                            (click)="facebookLogin()"><span class="fa fa-facebook"></span>Login
+                            with Facebook</button>
+                        <a href="{{insta_login}}"><button style="cursor: pointer;" class="googlelog" type="button"><span
+                                    class="fa fa-instagram"></span>Login
+                                with Instagram</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="searchcolshow" *ngIf="searchopen || static_search">
+        <div class="row">
+            <div class="col-12 d-flex flex-wrap">
+                <div
+                    class="searchtextfields {{currentRoute == moduleRouteList.home  ? '' : 'searchtextfields-full-width'}}">
+                    <input type="text" placeholder="I'm looking for..." class="form-control" #searchBar
+                        [(ngModel)]='feed_search_value' name='searchBar' (keyup)='searFeed()'>
+                </div>
+                <div class="searchfilterheader" *ngIf="currentRoute == moduleRouteList.home ">
+                    <div class="btn-group" dropdown>
+                        <button id="button-basic" dropdownToggle type="button" aria-controls="dropdown-basic">
+                            {{dropdown_value}} <span class="caret"></span>
+                        </button>
+                        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu"
+                            aria-labelledby="button-basic">
+                            <li *ngFor="let name of feed_option_array" role="menuitem"
+                                (click)="changeFeedDropdownMenu(name)">
+                                <a class="dropdown-item" href="javascript:void(0)">{{name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,190 @@
+<toaster-container [toasterconfig]="config" style="z-index:999999;"></toaster-container>
+<div class="container-fluid">
+  <div class="row">
+    <div class="storemenufull njdansjn" [ngClass]="{show: shouldShow, hide: !shouldShow }">
+      <nav class="navbar navbar-expand-md">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"
+          (click)="isCollapsed = !isCollapsed">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar" [collapse]="isCollapsed">
+          <ul class="navbar-nav justify-content-between">
+            <li class="nav-item dropdown" *ngFor="let headers of store_header "><label><span class="nav-link"
+                  (click)="store_headers(headers?.type)">
+                  {{headers?.name | titlecase }}
+                </span>
+                <input type="checkbox">
+                <ul *ngIf="headers?.data.length" id="basic-link-dropdown" class="dropdown-menu" role="menu"
+                  aria-labelledby="basic-link">
+                  <div class="dropdownlink">
+                    <li class="nav-item-link">
+                      <ul>
+                        <li *ngFor="let sub_branch of headers?.data "><a href="javascript:void(0)"
+                            (click)="sub_cat_choose(headers.type,sub_branch.id,sub_branch.name)"><small>{{sub_branch?.name}}</small></a>
+                        </li>
+                      </ul>
+                    </li>
+                  </div>
+                </ul>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="storelistignrow">
+      <div class="row d-flex align-items-start">
+        <div class="storefiltercol">
+          <h5>Filter By</h5>
+          <form [formGroup]="filterForm">
+            <b>&#160;&#160;&#160;&#62;&#160;Price</b>
+            <ng5-slider [(value)]="minValue" [(highValue)]="maxValue" [options]="options"
+              (userChangeEnd)="onUserChangeEnd($event)">
+            </ng5-slider>
+            <accordion>
+              <div *ngFor="let sidebar_name of store_sidebar">
+                <accordion-group heading="{{sidebar_name.name | titlecase}}">
+                  <!-- [isOpen]="sidebar_name.type == 'hair_care_product_types' ? 'isFirstOpen' : '' "> -->
+                  <div class="shortlist">
+                    <div class="form-check" *ngFor="let sub_cat of sidebar_name.data" class="form-group checkboxinline">
+                      <input formControlName="{{sidebar_name.type}}" class="form-control form-check-input"
+                        (change)="selectChanges(sidebar_name.type,sub_cat.id, $event.target.checked)"
+                        name="{{sub_cat.name}}" type="checkbox" id="{{sub_cat.name}}">
+                      <label class="form-check-label" for="{{sub_cat.name}}"> {{sub_cat.name}}</label>
+                    </div>
+                  </div>
+                </accordion-group>
+              </div>
+            </accordion>
+            <button type="button" class="btn btn-primary btn-sm" (click)="clearfilter()">Clear Filter</button>
+          </form>
+        </div>
+        <div class="storproductlist">
+          <h1>Store</h1>
+          <div class="main_store_list">
+            <div class='storesamelist' *ngIf="this.item_name != null">{{this.item_name | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.item_name1 != null">{{this.item_name1 | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.item_name2 != null">{{this.item_name2 | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.item_name3 != null">{{this.item_name3 | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.item_name4 != null">{{this.item_name4 | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.item_name5 != null">{{this.item_name5 | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.sale_header != ''">{{this.sale_header | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.treading != null">{{this.seller_name | titlecase}}</div>
+            <div class='storesamelist' *ngIf="this.arrival != null">{{this.arrival_name | titlecase}}</div>
+          </div>
+          <div *ngIf="store_products?.length != 0" class="productlistingrow">
+            <ul class="d-flex flex-wrap align-items-start">
+              <li *ngFor="let item of store_products">
+                <div class="storeproduct" (click)="seeProductDetails_screen($event, item?.id)" style="cursor: pointer;">
+                  <div class="storeproducthumb d-flex justify-content-center align-items-center">
+                    <img img-preloader="{{item?.product_image}}" alt="" style=" object-fit: contain; max-width: 85%;"
+                      (error)="imgErrorHandler($event)">
+                    <div class="overlaybtn d-flex justify-content-center align-items-center">
+                      <a class="btngray" (click)="openModal(template, item);$event.stopPropagation()">quick shop</a>
+                    </div>
+                    <a *ngIf="is_logged_in" href="javascript:void(0)"
+                      (click)="addFavourite(item?.id,item?.is_favourite);$event.stopPropagation()">
+                      <i class="hearticon" [ngClass]="{'hearticon-active': item?.is_favourite}"></i>
+                    </a>
+                  </div>
+                  <div class="d-flex flex-wrap flex-column">
+                    <p> {{item?.name.length > 27 ? item?.name.substr(0,27).concat("..."): item?.name}} </p>
+                    <small>
+                      {{(item?.tag?.name == null)?'&#160;':  item?.tag?.name.length > 27 ?   item?.tag?.name.substr(0,27).concat("..."):  item?.tag?.name}}
+                    </small>
+                        <strong class="flex-items"> <span class="minus-prisusm" *ngIf="item.price != item.final_price"><s
+                          style="color: #9e9697;">${{(item?.price != null)? item?.price: '00.00'}}</s> &#160;&#160; </span><span style="color: #e74c3c;" class="main-pridsnkl" *ngIf="item.price != item.final_price">
+                      ${{(item?.final_price != null)? item?.final_price: '00.00'}} </span><span class="main-pridsnkl" *ngIf="item.price == item.final_price">
+                          ${{(item?.final_price != null)? item?.final_price: '00.00'}} </span>&#160;&#160;<a style="color: #e74c3c;font-size: small; margin-bottom:0px"
+                         *ngIf="item.discount_percentage != null">{{item?.discount_percentage}}%
+                        OFF </a></strong>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="show_loader" class="center-loader-main-n">
+            <app-half-circle-spinner [animationDuration]="1000" [size]="60" [color]="'#000000'">
+            </app-half-circle-spinner>
+          </div>
+          <div *ngIf="store_products?.length == 0" class="productlistingrow">
+            <h4> Not avilable any product </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <div class="modal-body quickshopmodel storelandind-popup-man">
+    <div class="close-btn">
+      <a href="javascript:void(0)" (click)="modalRef.hide()"> <img src="assets/images/gn_0.png" height="85px;"></a>
+    </div>
+    <div class="d-flex align-items-end justify-content-between flex-wrap">
+      <div class="popproleftcol text-center">
+        <img img-preloader="{{clicked_product_details?.product_image}}" style=" object-fit: contain;min-height:520px;"
+          (error)="imgErrorHandler($event)">
+      </div>
+      <div class="productpopright">
+        <div class="quickshopdetail">
+          <h1 style="font-size: 28px; width: 90%;"> {{clicked_product_details?.name.length > 75 ?
+                clicked_product_details?.name.substr(0,75).concat("..."):
+                clicked_product_details?.name}}</h1>
+          <p *ngIf="clicked_product_details?.description != null">
+            {{clicked_product_details?.description.length > 232 ?
+                  clicked_product_details?.description.substr(0,232).concat("..."):
+                  clicked_product_details?.description}}
+          </p>
+          <p *ngIf="clicked_product_details?.description == null">No Description</p>
+            <strong>
+              <h3><s *ngIf="clicked_product_details?.price != clicked_product_details?.final_price"
+                style="color: #9e9697;" ><small>${{(clicked_product_details?.price != null)? clicked_product_details?.price: '00.00'}}</small></s>
+                &#160;
+                <span *ngIf="clicked_product_details?.price != clicked_product_details?.final_price" style="color: #e74c3c;">
+                  ${{(clicked_product_details?.final_price != null)? clicked_product_details?.final_price: '00.00'}}</span>
+                <span *ngIf="clicked_product_details?.price == clicked_product_details?.final_price">
+                  ${{(clicked_product_details?.final_price != null)? clicked_product_details?.final_price: '00.00'}}</span>
+              </h3>
+            </strong>
+          </div>
+        <div class="quickshopcolorcol">
+          <div class="row justify-content-between">
+            <div class="services col-sm-6 col-md-7">
+              <h4>Qty</h4>
+              <div class="counter">
+                <button (click)="decrement()" class="minus" [disabled]="(count>1)? false:true">-</button>
+                <input type="text" value="{{count}}" class="form-control" (ngModelChange)="onChange($event)" numbersOnly
+                  readonly="true">
+                <button (click)="increment()" class="plus"
+                  [disabled]="count>=clicked_product_details?.quantity">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="addtocarbtnpop">
+          <div class="row align-items-end">
+            <div class="col-sm-7 col-lg-7" *ngIf="clicked_product_details?.quantity != 0 || null"><a
+                *ngIf="is_logged_in" (click)="addToCart(clicked_product_details?.id,count)" href="javascript:void(0)"
+                class="btnblack"><i><img src="assets/images/cart-icon-fill.svg"></i><span>Add
+                  To Cart</span></a><a *ngIf="!is_logged_in" (click)="notaddproduct()" href="javascript:void(0)"
+                class="btnblack"><i><img src="assets/images/cart-icon-fill.svg"></i><span>Add
+                  To Cart</span></a></div>
+            <div *ngIf="clicked_product_details?.quantity == 0 || null" class="col-sm-7 col-lg-7">
+              <a class="outofstock"><u style="color: #d11515;"> Product Not available or Out of
+                  Stock</u></a>
+            </div>
+            <div class="col-sm-5 col-lg-5">
+              <a href="javascript:void(0)" class="link"
+                (click)="seeProductDetails($event, clicked_product_details?.id)">See
+                full details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<a href="javascript:void(0)" (click)="arrow_tops()" class="bottom-to-top">
+  <img src="assets/images/arrow-top.svg" alt="bottom-to-top">
+</a>

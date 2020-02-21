@@ -1,0 +1,155 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="commonpadfull">
+      <div class="starredrowfull">
+        <div *ngIf="!payment_sucess" class="addresfrm">
+          <div class="d-flex align-items-center justify-content-between flex-wrap">
+            <div class="addressinput">
+              <span>Total Wallet Amount : <strong>${{wallet_data?.amount}}</strong></span>
+              <h1 *ngIf="!edit_clilk">Add Bank Account</h1>
+              <h1 *ngIf="edit_clilk">Update Bank Account</h1>
+              <form [formGroup]="bankForm" (ngSubmit)=" edit_clilk ? onEditSubmit() : bankFormSubmit()">
+                <div *ngIf="error" class="alert alert-danger">
+                  {{error}}
+                </div>
+                <div *ngIf="errorss" class="alert alert-danger">
+                  {{errorss}}
+                </div>
+                <div *ngIf="!edit_clilk" class="from-group">
+                  <div class="halfwidth">
+                    <label>Country</label>
+                    <div class="frmfields">
+                      <input type="text" class="form-control" formControlName="country" placeholder="Country"
+                        value='country' readonly></div>
+                  </div>
+                  <div *ngIf="!edit_clilk" class="halfwidth">
+                    <label>Currency</label>
+                    <div class="frmfields">
+                      <input type="text" class="form-control" formControlName="currency" placeholder="Currency"
+                        value='currency' readonly></div>
+                  </div>
+                </div>
+                <div *ngIf="!edit_clilk" class="from-group">
+                  <label>Account Number</label>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="account_number"
+                      placeholder="Account Number">
+                    <div *ngIf="bank_submit && bankForm.controls.account_number.invalid">
+                      <div *ngIf="bankForm.hasError('required', 'account_number')" class="alert alert-danger">
+                        Please enter Account Number.
+                      </div>
+                      <div
+                        *ngIf="!bankForm.hasError('required', 'account_number')  && bankForm.hasError('pattern', 'account_number')"
+                        class="alert alert-danger">
+                        Enter only numeric value.
+                      </div>
+                      <div
+                        *ngIf="!bankForm.hasError('required', 'account_number')  && !bankForm.hasError('pattern', 'account_number') && bankForm.hasError('minlength', 'account_number')"
+                        class="alert alert-danger">
+                        Account Number should be 12 digits.
+                      </div>
+                      <div *ngIf="!bankForm.hasError('required', 'account_number')  && !bankForm.hasError('pattern', 'account_number') &&  !bankForm.hasError('minlength', 'account_number') && 
+                          bankForm.hasError('maxlength', 'account_number')" class="alert alert-danger">
+                        Account Number should be max 12 digits.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <label>Card Holder Name</label>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="account_holder_name"
+                      placeholder="Card Holder Name">
+                    <div *ngIf="bank_submit && bankForm.controls.account_holder_name.invalid">
+                      <div *ngIf="bankForm.hasError('required', 'account_holder_name')" class="alert alert-danger">
+                        Please enter Card Holder Name.
+                      </div>
+                      <div
+                        *ngIf="!bankForm.hasError('required', 'account_holder_name')  && bankForm.hasError('pattern', 'account_holder_name')"
+                        class="alert alert-danger">
+                        Enter only numeric value.
+                      </div>
+                      <div
+                        *ngIf="!bankForm.hasError('required', 'account_holder_name')  && !bankForm.hasError('pattern', 'account_holder_name') && bankForm.hasError('minlength', 'account_holder_name')"
+                        class="alert alert-danger">
+                        Card Holder Name should be min 2 digits.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!edit_clilk" class="from-group">
+                  <label>Routing Number</label>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="routing_number"
+                      placeholder="Routing Number">
+                    <div *ngIf="bank_submit && bankForm.controls.routing_number.invalid">
+                      <div *ngIf="bankForm.hasError('required', 'routing_number')" class="alert alert-danger">
+                        Please enter Routing Number.
+                      </div>
+                      <div
+                        *ngIf="!bankForm.hasError('required', 'routing_number')  && bankForm.hasError('pattern', 'routing_number')"
+                        class="alert alert-danger">
+                        Enter only numeric value.
+                      </div>
+                      <div
+                        *ngIf="!bankForm.hasError('required', 'routing_number')  && !bankForm.hasError('pattern', 'routing_number') && bankForm.hasError('minlength', 'routing_number')"
+                        class="alert alert-danger">
+                        Routing Number should be 9 digits.
+                      </div>
+                      <div *ngIf="!bankForm.hasError('required', 'routing_number')  && !bankForm.hasError('pattern', 'routing_number') &&  !bankForm.hasError('minlength', 'routing_number') && 
+                              bankForm.hasError('maxlength', 'routing_number')" class="alert alert-danger">
+                        Routing Number should be max 9 digits.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!edit_clilk" class="from-group">
+                  <input type="submit" value="Save & Payout" [disabled]="payment_sucess_button" class="btnblack">
+                </div>
+                <div *ngIf="edit_clilk" class="from-group">
+                  <input type="submit" value="Update" class="btnblack">
+                </div>
+              </form>
+            </div>
+            <div *ngIf="list_bank?.length == 0" class="addressinput mb-0">
+              <img src="assets/images/card-payment-pic.svg">
+            </div>
+            <div *ngIf="list_bank?.length > 0" class="addressinput mb-0">
+              <h2>Save Bank <img style="height: 27px;" src="assets/images/bank1.jpg"></h2>
+              <div *ngFor="let listbank of list_bank" class="addressrow d-flex justify-content-between flex-wrap">
+                <input type="radio" style="margin-top: 50px;height: 20px;width: 23px;" name="list_name" value=""
+                  (change)="radioSelect(listbank)"
+                  checked="{{ (listbank.default_for_currency == true) ? 'checked' : ''}}">
+                <div class="addreleft">
+                  <strong>Acc Holder : <small> {{listbank?.account_holder_name}}</small><br>
+                    Acc Number : <small> {{listbank?.account_number}}</small><br>
+                    Routing Number : <small> {{listbank?.routing_number}}</small><br>
+                    Bank Name : <small> {{listbank?.bank_name}} </small> </strong>
+                </div>
+                <div class="addbtnright">
+                  <button (click)="pay_wallet(listbank.id)" [disabled]="payment_sucess_button" class="btngray">Payout</button>
+                  <button *ngIf="listbank.default_for_currency == false" (click)="delete_account(listbank?.id)"
+                    class="btngray">Delete</button>
+                  <a
+                    *ngIf="listbank.default_for_currency == true">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="payment_sucess" class="confirmorder">
+          <div class="alert alert-success">
+            Your money has been successfully sent to {{bankname}} ,It will take 7-8 business days to reflect in your
+            bank.
+          </div>
+          <div class="orderplaceinfo">
+            <h1>Total Transaction Amount Is ${{this.deposite_amount}}. </h1>
+            <span>Transaction Date {{order_created | date:'d MMM y, h:mm a'}}</span>
+          </div><br>
+          <a href="javascript:void(0)" (click)="back_home()"><span>Back To Home <img
+                src="assets/images/readmorearrow.svg"> </span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

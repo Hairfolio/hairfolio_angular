@@ -1,0 +1,319 @@
+<div
+    class="signupcontainer d-flex justify-content-center align-items-md-center  align-items-lg-center align-items-start flex-wrap">
+    <div class="signuprow">
+        <div class="container-fluid">
+            <div class="row justify-content-center align-items-md-start align-items-lg-center">
+                <div class="col-sm-12 col-md-12 col-lg-7 leftcolimg">
+                    <div class="logosignup">
+                        <img src="assets/images/logo-footer.svg">
+                    </div>
+                </div>
+                <div class="col-sm-7 col-md-7 col-lg-5 signupborderleft">
+                    <h3>Sign up</h3>
+                    <div *ngIf="url" class="frmfields">
+                        <img src="{{url}}" style="width:100px; height:100px" class="profile-img">
+                    </div>
+                    <div *ngIf="!url" class="frmfields">
+                        <img src="assets/images/hf_imagedisplay.png" style="width:100px; height:100px"
+                            class="profile-img">
+                    </div>
+                    <div class="signupfrm">
+                        <form [formGroup]="signupForm" (ngSubmit)="signupFormSubmit()">
+                            <div class="form-group">
+                                <div class="frmfields">
+                                    <select class="form-control" (change)="selectChange($event)"
+                                        formControlName="account_type" id="category">
+                                        <option value="" disabled selected>User Type</option>
+                                        <option value="consumer">Consumer</option>
+                                        <option value="owner">Salon</option>
+                                        <option value="stylist">Stylist</option>
+                                        <option value="ambassador">Brand</option>
+                                    </select>
+                                    <div *ngIf="submitted && signupForm.controls.account_type.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'account_type')"
+                                            class="alert alert-danger">
+                                            Please select login user.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label> Profile Picture</label>
+                                <div class="frmfields">
+                                    <input formControlName="profile_img" type="file" (change)="onFileChange($event)"
+                                        accept="image/*" >
+                                </div>
+                                <div *ngIf="submitted && !isfileselected">
+                                    <div 
+                                        class="alert alert-danger">
+                                        Profile Picture is required.
+                                    </div>
+                                </div>
+                                <!-- <div *ngIf="submitted && signupForm.controls.profile_img.errors?.required"
+                                    class="alert alert-danger">
+                                    Profile Picture is required.
+                                </div>
+                                <div *ngIf=" submitted && ! signupForm.controls.profile_img.errors?.required">
+                                    <div *ngIf="submitted && !validImageType" class="alert alert-danger">
+                                        Please upload valid image.
+                                    </div>
+                                </div> -->
+                            </div>
+                            <div class="form-group"
+                                *ngIf="signupForm.value.account_type == 'consumer' || signupForm.value.account_type == 'stylist'">
+                                <label>First name</label>
+                                <div class="frmfields">
+                                    <input type="text" class="form-control" formControlName="first_name"
+                                        placeholder="First name" value="michelle">
+                                    <div *ngIf="submitted && signupForm.controls.first_name.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'first_name')"
+                                            class="alert alert-danger">
+                                            Please enter Firstname.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'first_name') && signupForm.hasError('minlength', 'first_name')"
+                                            class="alert alert-danger">
+                                            Firstname minimum 2 latters.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'first_name') && !signupForm.hasError('minlength', 'first_name') && !signupForm.hasError('pattern', 'first_name') && signupForm.hasError('maxlength', 'first_name')"
+                                            class="alert alert-danger">
+                                            First name should contains maximum 50 characters.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" *ngIf="signupForm.value.account_type == 'owner'">
+                                <label>Salon name</label>
+                                <div class="frmfields">
+                                    <input type="text" class="form-control" formControlName="salonname"
+                                        placeholder="salon name" value="michelle">
+                                    <div *ngIf="submitted && signupForm.controls.salonname.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'salonname')"
+                                            class="alert alert-danger">
+                                            Please enter Salonname.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'salonname') && signupForm.hasError('minlength', 'salonname')"
+                                            class="alert alert-danger">
+                                            Salonname minimum 2 latters.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'salonname') && !signupForm.hasError('minlength', 'salonname') && signupForm.hasError('pattern', 'salonname')"
+                                            class="alert alert-danger">
+                                            Enter only alphabatic.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'salonname') && !signupForm.hasError('minlength', 'salonname') && !signupForm.hasError('pattern', 'salonname') && signupForm.hasError('maxlength', 'salonname')"
+                                            class="alert alert-danger">
+                                            Salonname maximum 100 latters.
+                                        </div>
+                                        <!-- <div *ngIf="!signupForm.hasError('required', 'salonname') && 
+                                        !signupForm.hasError('minlength', 'salonname') && 
+                                        !signupForm.hasError('maxlength', 'salonname') && 
+                                        signupForm.hasError('whitespace', 'salonname')" class="alert alert-danger">
+                                            Space is not allowed in Salonname.
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" *ngIf="signupForm.value.account_type == 'ambassador'">
+                                <label>Brand name</label>
+                                <div class="frmfields">
+                                    <input type="text" class="form-control" formControlName="brandname"
+                                        placeholder="brand name" value="michelle">
+                                    <div *ngIf="submitted && signupForm.controls.brandname.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'brandname')"
+                                            class="alert alert-danger">
+                                            Please enter Brandname.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'brandname') && signupForm.hasError('minlength', 'brandname')"
+                                            class="alert alert-danger">
+                                            Brandname minimum 2 latters.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'brandname') && !signupForm.hasError('minlength', 'brandname') && signupForm.hasError('pattern', 'brandname')"
+                                            class="alert alert-danger">
+                                            Enter only alphabatic.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'brandname') && !signupForm.hasError('minlength', 'brandname') && !signupForm.hasError('pattern', 'brandname') && signupForm.hasError('maxlength', 'brandname')"
+                                            class="alert alert-danger">
+                                            Brandname maximum 100 latters.
+                                        </div>
+                                        <!-- <div *ngIf="!signupForm.hasError('required', 'brandname') && 
+                                        !signupForm.hasError('minlength', 'brandname') && 
+                                        !signupForm.hasError('maxlength', 'brandname') && 
+                                        signupForm.hasError('whitespace', 'brandname')" class="alert alert-danger">
+                                            Space is not allowed in Brandname.
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group"
+                                *ngIf="signupForm.value.account_type == 'consumer' || signupForm.value.account_type == 'stylist'">
+                                <label>Last name</label>
+                                <div class="frmfields">
+                                    <input type="text" class="form-control" formControlName="last_name"
+                                        placeholder="Last name" value="michelle">
+                                    <div *ngIf="submitted && signupForm.controls.last_name.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'last_name')"
+                                            class="alert alert-danger">
+                                            Please enter Lastname.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'last_name') && signupForm.hasError('minlength', 'last_name')"
+                                            class="alert alert-danger">
+                                            Lastname minimum 2 latters.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'last_name') && !signupForm.hasError('minlength', 'last_name') && !signupForm.hasError('pattern', 'last_name') && signupForm.hasError('maxlength', 'last_name')"
+                                            class="alert alert-danger">
+                                            Lastname maximum 50 latters.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <div class="frmfields">
+                                    <input type="email" class="form-control" formControlName="email" placeholder="Email"
+                                        value="xyz@gmail.com">
+                                    <div *ngIf="submitted && signupForm.controls.email.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'email')"
+                                            class="alert alert-danger">
+                                            Please enter email.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'email') && 
+                                                        (signupForm.hasError('pattern', 'email') || signupForm.hasError('email', 'email'))"
+                                            class="alert alert-danger">
+                                            Email is not valid.
+                                        </div>
+                                    </div>
+                                    <div *ngIf="error" class="alert alert-danger">
+                                        email {{error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div class="frmfields">
+                                    <input type="password" class="form-control" formControlName="password"
+                                        placeholder="Password">
+                                    <div *ngIf="submitted && signupForm.controls.password.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'password')"
+                                            class="alert alert-danger">
+                                            Please enter password.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'password') && 
+                                                            signupForm.hasError('minlength', 'password')"
+                                            class="alert alert-danger">
+                                            Password should be minimum 6 latters.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'password') && 
+                                                            !signupForm.hasError('minlength', 'password') && 
+                                                            signupForm.hasError('maxlength', 'password')"
+                                            class="alert alert-danger">
+                                            Password should be maximum 16 latters.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'password') && 
+                                                            !signupForm.hasError('minlength', 'password') && 
+                                                            !signupForm.hasError('maxlength', 'password') && 
+                                                            signupForm.hasError('whitespace', 'password')"
+                                            class="alert alert-danger">
+                                            Space is not allowed in password.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label> Confirm Password</label>
+                                <div class="frmfields">
+                                    <input type="password" class="form-control" formControlName="password_confirmation"
+                                        placeholder="Confirm Password" noSpaces>
+                                    <div *ngIf="submitted && signupForm.controls.password_confirmation.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'password_confirmation')"
+                                            class="alert alert-danger">
+                                            Please enter confirm password.
+                                        </div>
+                                        <div *ngIf="!signupForm.hasError('required', 'password_confirmation') && signupForm.hasError('whitespace', 'password_confirmation')"
+                                            class="alert alert-danger">
+                                            Space is not allowed in password.
+                                        </div>
+                                    </div>
+                                    <div *ngIf="signupForm.controls.password_confirmation.dirty && signupForm.controls.password_confirmation.valid && (signupForm.controls.password_confirmation.value !== signupForm.controls.password.value)"
+                                        class="alert alert-danger">
+                                        Password and confirm password must be same.
+                                    </div>
+                                </div>
+                            </div>
+                            <label *ngIf="!avilable_promo" style="padding-right: 200px;width: 372px;"> <a
+                                    href="javascript:void(0)" (click)="orderModal(template3);">Have
+                                    Referral Code ?</a></label>
+                            <div class="form-group" *ngIf="avilable_promo">
+                                <label>Referral Code</label>
+                                <div class="frmfields">
+                                    <input type="text" class="form-control" [(ngModel)]='referral_name'
+                                        formControlName="referral_code" placeholder="Referral Code" readonly>
+                                    <div class="validationsuccess">
+                                        <a href="javascript:void(0)" (click)="promocode_remove();"> <img
+                                                src="assets/images/error-validate-icn.svg"></a>
+                                    </div>
+                                    <div *ngIf="submitted && signupForm.controls.referral_code.invalid">
+                                        <div *ngIf="signupForm.hasError('required', 'referral_code')"
+                                            class="alert alert-danger">
+                                            Please enter Referral Code.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group checkboxinline">
+                                <input type="checkbox" id="agreecheck" formControlName="term_check"
+                                    (change)="checkTerms($event)">
+                                <label for="agreecheck"> I agree to the <a
+                                        href="http://hairfolioapp.com/terms-conditions/">terms &
+                                        conditions</a></label>
+                                <div *ngIf="submitted && signupForm.controls.term_check.invalid">
+                                    <div *ngIf="!signupForm.hasError('required', 'firstname') && 
+                                                    !signupForm.hasError('required', 'lastname') && 
+                                                    !signupForm.hasError('minlength', 'firstname') && 
+                                                    !signupForm.hasError('minlength', 'lastname') && 
+                                                    !signupForm.hasError('email', 'email') && 
+                                                    !signupForm.hasError('required', 'password') && 
+                                                    !signupForm.hasError('minlength', 'password') && 
+                                                    !signupForm.hasError('maxlength', 'password') && 
+                                                    !signupForm.hasError('required', 'email') && 
+                                                    signupForm.hasError('required', 'term_check')"
+                                        class="alert alert-danger">
+                                        Please accept terms and condition before proceed.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="loginbtn">
+                                <input type="submit" value="Create account" class="btn btn-primary">
+                            </div>
+                        </form>
+                        <div class="loginlink">
+                            <label> Have an account? <a routerLink="/home">Login</a></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #template3>
+    <div class="chat_window_list" style="max-width: 400px; height: 220px;">
+        <div class="top_menu">
+            <div class="title">Referral Code</div>
+            <div class="close-btn">
+                <a href="javascript:void(0)" (click)="modalRef.hide()">
+                    <img src="assets/images/gn_0.png" height="55px;"> </a>
+            </div>
+        </div>
+        <br>
+        <input type="text" class="form-control" placeholder="Referral Code" #promocode
+            style=" width: 80%; margin-left: 40px;">
+        <span *ngIf="!res_status && aply_code" style="margin-left: 40px; color: #e44922; font-size: 15px;">
+            &#160; Entered referral code is invalid. </span>
+        <span *ngIf="referral_name ==''" style="margin-left: 40px; color: #e44922; font-size: 15px;">
+            &#160; Please enter referral code. </span>
+        <br>
+        <div class="text-center">
+            <button (click)="apply_promo(promocode.value)" type="button"
+                class="{{coupon_name == ''? 'btngray':'btnblack'}}">Apply</button>
+        </div>
+    </div>
+</ng-template>

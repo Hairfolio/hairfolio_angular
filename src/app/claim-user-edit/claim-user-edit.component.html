@@ -1,0 +1,508 @@
+<toaster-container [toasterconfig]="config" style="z-index:111111;"></toaster-container>
+<div class="container-fluid">
+  <div class="row">
+    <div class="commonpadfull">
+      <div class="starredrowfull">
+        <div class="addresfrm">
+          <div class="d-flex align-items-start justify-content-between flex-wrap">
+            <div class="addressinput">
+              <h1>Claim User Edit Information</h1>
+              <form [formGroup]="claimForm" (ngSubmit)="onClaimEdit(user_id)">
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Salon Name</h5>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="name" placeholder="Salon Name">
+                    <div *ngIf="submitted && claimForm.controls.name.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'name')" class="alert alert-danger">
+                        Please enter Salon Name.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'name') && claimForm.controls['name'].errors?.whitespace"
+                        class="alert alert-danger">
+                        Please enter Salon Name.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'name') && !claimForm.controls['name'].errors?.whitespace && claimForm.controls['name'].errors?.lengthCheck"
+                        class="alert alert-danger">
+                        Salon Name should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'name') && !claimForm.controls['name'].errors?.whitespace && !claimForm.controls['name'].errors?.lengthCheck && claimForm.hasError('minlength', 'name')"
+                        class="alert alert-danger">
+                        Salon Name should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'name') && !claimForm.controls['name'].errors?.whitespace && !claimForm.controls['name'].errors?.lengthCheck && !claimForm.hasError('minlength', 'name') && claimForm.hasError('pattern', 'name')"
+                        class="alert alert-danger">
+                        Enter only alphabatic.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'name') && !claimForm.controls['name'].errors?.whitespace && !claimForm.controls['name'].errors?.lengthCheck && !claimForm.hasError('minlength', 'name') && !claimForm.hasError('pattern', 'name') && claimForm.hasError('maxlength', 'name')"
+                        class="alert alert-danger">
+                        Salon Name can be max 30 characters long.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Salon Info</h5>
+                  <div class="frmfields">
+                    <textarea class="form-control" formControlName="info" placeholder="Salon Info"></textarea>
+                    <div *ngIf="submitted && claimForm.controls.info.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'info')" class="alert alert-danger">
+                        Please enter Salon Info.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'info') && claimForm.controls['info'].errors?.whitespace"
+                        class="alert alert-danger">
+                        Please enter Salon Info.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'info') && !claimForm.controls['info'].errors?.whitespace && claimForm.controls['info'].errors?.lengthCheck"
+                        class="alert alert-danger">
+                        Salon Info should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'info') && !claimForm.controls['info'].errors?.whitespace && !claimForm.controls['info'].errors?.lengthCheck && claimForm.hasError('minlength', 'info')"
+                        class="alert alert-danger">
+                        Salon Info should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'info') && !claimForm.controls['info'].errors?.whitespace && !claimForm.controls['info'].errors?.lengthCheck && !claimForm.hasError('minlength', 'info') && !claimForm.hasError('pattern', 'info') && claimForm.hasError('maxlength', 'info')"
+                        class="alert alert-danger">
+                        Salon Info can be max 300 characters long.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Address</h5>
+                  <div class="frmfields">
+                    <textarea class="form-control" formControlName="address" placeholder="Address"></textarea>
+                    <div *ngIf="submitted && claimForm.controls.address.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'address')" class="alert alert-danger">
+                        Please enter Address.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'address') && claimForm.controls['address'].errors?.whitespace"
+                        class="alert alert-danger">
+                        Please enter Address.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'address') && !claimForm.controls['address'].errors?.whitespace && claimForm.controls['address'].errors?.lengthCheck"
+                        class="alert alert-danger">
+                        Address should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'address') && !claimForm.controls['address'].errors?.whitespace && !claimForm.controls['address'].errors?.lengthCheck && claimForm.hasError('minlength', 'address')"
+                        class="alert alert-danger">
+                        Address should be minimum 2 latters.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">City</h5>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="city" placeholder="City">
+                    <div *ngIf="submitted && claimForm.controls.city.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'city')" class="alert alert-danger">
+                        Please enter City.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'city') && claimForm.controls['city'].errors?.whitespace"
+                        class="alert alert-danger">
+                        Please enter City.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'city') && !claimForm.controls['city'].errors?.whitespace && claimForm.controls['city'].errors?.lengthCheck"
+                        class="alert alert-danger">
+                        City name should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'city') && !claimForm.controls['city'].errors?.whitespace && !claimForm.controls['city'].errors?.lengthCheck && claimForm.hasError('minlength', 'city')"
+                        class="alert alert-danger">
+                        City name should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'city') && !claimForm.controls['city'].errors?.whitespace && !claimForm.controls['city'].errors?.lengthCheck && !claimForm.hasError('minlength', 'city') && claimForm.hasError('pattern', 'city')"
+                        class="alert alert-danger">
+                        Enter only alphabatic.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'city') && !claimForm.controls['city'].errors?.whitespace && !claimForm.controls['city'].errors?.lengthCheck && !claimForm.hasError('minlength', 'city') && !claimForm.hasError('pattern', 'city') && claimForm.hasError('maxlength', 'city')"
+                        class="alert alert-danger">
+                        City can be maximum 30 characters long.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <div class="halfwidth">
+                    <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">State</h5>
+                    <div class="frmfields">
+                      <input type="text" class="form-control" formControlName="state" placeholder="State">
+                      <div *ngIf="submitted && claimForm.controls.state.invalid">
+                        <div *ngIf="claimForm.hasError('required', 'state')" class="alert alert-danger">
+                          Please enter state.
+                        </div>
+                        <div
+                          *ngIf="!claimForm.hasError('required', 'state') && claimForm.controls['state'].errors?.whitespace"
+                          class="alert alert-danger">
+                          Please enter state.
+                        </div>
+                        <div
+                          *ngIf="!claimForm.hasError('required', 'state') && !claimForm.controls['state'].errors?.whitespace && claimForm.controls['state'].errors?.lengthCheck"
+                          class="alert alert-danger">
+                          state shoou sssssssssss.
+                        </div>
+                        <div
+                          *ngIf="!claimForm.hasError('required', 'state') && !claimForm.controls['state'].errors?.whitespace && claimForm.hasError('minlength', 'state')"
+                          class="alert alert-danger">
+                          state should be minimum 2 latters.
+                        </div>
+                        <div
+                          *ngIf="!claimForm.hasError('required', 'state') && !claimForm.controls['state'].errors?.whitespace && !claimForm.hasError('minlength', 'state') && claimForm.hasError('pattern', 'state')"
+                          class="alert alert-danger">
+                          Enter only alphabatic.
+                        </div>
+                        <div
+                          *ngIf="!claimForm.hasError('required', 'state') && !claimForm.controls['state'].errors?.whitespace && !claimForm.hasError('minlength', 'state') && !claimForm.hasError('pattern', 'state') && claimForm.hasError('maxlength', 'state')"
+                          class="alert alert-danger">
+                          state can be maximum 100 characters long.
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="halfwidth">
+                    <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Zipcode</h5>
+                    <div class="frmfields">
+                      <input type="text" class="form-control" formControlName="zip" placeholder="Zipcode">
+                      <div *ngIf="submitted && claimForm.controls.zip.invalid">
+                        <div *ngIf="claimForm.hasError('required', 'zip')" class="alert alert-danger">
+                          Please enter Zipcode.
+                        </div>
+                        <div *ngIf="!claimForm.hasError('required', 'zip')  && claimForm.hasError('pattern', 'zip')"
+                          class="alert alert-danger">
+                          Enter only numeric value.
+                        </div>
+                        <div
+                          *ngIf="!claimForm.hasError('required', 'zip') && !claimForm.hasError('pattern', 'zip')&& claimForm.hasError('minlength', 'zip')"
+                          class="alert alert-danger">
+                          Zipcode should be 5 digits.
+                        </div>
+                        <div *ngIf="!claimForm.hasError('required', 'zip') && !claimForm.hasError('pattern', 'zip') &&  !claimForm.hasError('minlength', 'zip') && 
+                              claimForm.hasError('maxlength', 'zip')" class="alert alert-danger">
+                          Zipcode should be maximum 6 latters.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Phone</h5>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="phone" placeholder="Phone">
+                    <div *ngIf="submitted && claimForm.controls.phone.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'phone')" class="alert alert-danger">
+                        Please enter Phone.
+                      </div>
+                      <div *ngIf="!claimForm.hasError('required', 'phone')  && claimForm.hasError('pattern', 'phone')"
+                        class="alert alert-danger">
+                        Enter only numeric value.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'phone')  && !claimForm.hasError('pattern', 'phone') && claimForm.hasError('minlength', 'phone')"
+                        class="alert alert-danger">
+                        Phone number should be 8 digits.
+                      </div>
+                      <div *ngIf="!claimForm.hasError('required', 'phone')  && !claimForm.hasError('pattern', 'phone') &&  !claimForm.hasError('minlength', 'phone') && 
+                              claimForm.hasError('maxlength', 'phone')" class="alert alert-danger">
+                        Phone number should be max 16 digits.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Website</h5>
+                  <div class="frmfields">
+                    <input type="text" class="form-control" formControlName="website" placeholder="Website">
+                    <div *ngIf="submitted && claimForm.controls.website.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'website')" class="alert alert-danger">
+                        Please enter website.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="from-group">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Specialities</h5>
+                  <div class="frmfields">
+                    <textarea class="form-control" formControlName="specialities" placeholder="specialities"></textarea>
+                    <div *ngIf="submitted && claimForm.controls.specialities.invalid">
+                      <div *ngIf="claimForm.hasError('required', 'specialities')" class="alert alert-danger">
+                        Please enter specialities.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'specialities') && claimForm.controls['specialities'].errors?.whitespace"
+                        class="alert alert-danger">
+                        Please enter specialities.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'specialities') && !claimForm.controls['specialities'].errors?.whitespace && claimForm.controls['specialities'].errors?.lengthCheck"
+                        class="alert alert-danger">
+                        specialities should be minimum 2 latters.
+                      </div>
+                      <div
+                        *ngIf="!claimForm.hasError('required', 'specialities') && !claimForm.controls['specialities'].errors?.whitespace && !claimForm.controls['specialities'].errors?.lengthCheck && claimForm.hasError('minlength', 'specialities')"
+                        class="alert alert-danger">
+                        specialities should be minimum 2 latters.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="salon_business?.length != 0">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">More Business Info</h5>
+                  <div *ngFor="let businesslist of salon_business; let i = index">
+                    <table>
+                      <tr>
+                        <td colspan="5">
+                          <b> {{businesslist?.info_name | titlecase}}</b>
+                        </td>
+                        <td colspan="3">&#160;&#160;</td>
+                        <td colspan="2">{{businesslist?.info_value }}</td>
+                        <td colspan="4">&#160;&#160;<a href="javascript:void(0)"
+                            (click)="business_remove(i,businesslist.id)"><u>Remove</u> </a> </td>
+                      </tr>
+                    </table>
+                  </div>
+                 <br>
+                </div>
+                <h5 *ngIf="salon_business?.length == 0" class='custom-bussinfocolor' style="margin-bottom: 9px;">More Business Info</h5>
+                  <div class="custom-time-resposive">
+                  <table style="width:100%">
+                    <tr>
+                      <td>
+                        <div class="drop_selection">
+                          <select class="form-control" (change)="selectChange_value_service($event)" id="category">
+                            <option value="Accepts Credit Cards" selected>Accepts Credit Cards</option>
+                            <option value="Accepts Google Pay ">Accepts Google Pay </option>
+                            <option value="Parking">Parking</option>
+                            <option value="Bike Parking">Bike Parking</option>
+                            <option value="Wheelchair Accessible ">Wheelchair Accessible </option>
+                            <option value="Good for Kids">Good for Kids</option>
+                            <option value="Wi-Fi">Wi-Fi</option>
+                            <option value="By Appointment Only">By Appointment Only</option>
+                            <option value="Gender Neutral Restrooms">Gender Neutral Restrooms</option>
+                          </select>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="drop_selection">
+                          <select class="form-control" (change)="selectChange_value($event)" id="category">
+                            <option value="Yes" selected>Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                      </td>
+                      <td>
+                        <span (click)="info_add()" class="btngrays" style="background: #c9cbca;margin-bottom: -7px;">Add Info</span>
+                      </td>
+                    </tr>
+                  </table>
+                  </div>
+                <div *ngIf="salon_timing?.length != 0">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Hours</h5>
+                  <div *ngFor="let timelist of salon_timing; let i = index" >
+                    <table *ngIf="timelist?.week_day != null || ''" class="custom-salon-time-table">
+                      <tr>
+                        <td style="width:70px;">
+                          <b> {{timelist?.week_day | titlecase}}</b>
+                        </td>
+                        <td>{{timelist?.open_time | date:'h:mm a'}}</td>
+                        <td> - </td>
+                        <td>{{timelist?.close_time | date:'h:mm a'}}</td>
+                        <td><a href="javascript:void(0)" (click)="timing_remove(i,timelist.id)"><u>Remove</u> </a> </td>
+                      </tr>
+                    </table>
+                  </div>
+                <br>
+                </div>
+                <h5 *ngIf="salon_timing?.length == 0" class='custom-bussinfocolor' style="margin-bottom: 9px;">Hours</h5>
+                  <div class="custom-time-resposive">
+                  <table style="width:100%">
+                    <tr>
+                      <td>
+                        <div class="drop_selection">
+                          <select class="form-control" (change)="selectChange($event)" id="category">
+                            <option value="mon" selected>Mon</option>
+                            <option value="tue">Tue</option>
+                            <option value="wed">Wed</option>
+                            <option value="thu">Thu</option>
+                            <option value="fri">Fri</option>
+                            <option value="sat">Sat</option>
+                            <option value="sun">Sun</option>
+                          </select>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="drop_selection">
+                          <select class="form-control" (change)="selectChange_open($event)" id="category">
+                            <option value="2000-01-01T18:30:00.000Z">12:00 am</option>
+                            <option value="2000-01-01T19:00:00.000Z">12:30 am </option>
+                            <option value="2000-01-01T19:30:00.000Z">1:00 am </option>
+                            <option value="2000-01-01T20:00:00.000Z">1:30 am </option>
+                            <option value="2000-01-01T20:30:00.000Z">2:00 am </option>
+                            <option value="2000-01-01T21:00:00.000Z">2:30 am </option>
+                            <option value="2000-01-01T21:30:00.000Z">3:00 am </option>
+                            <option value="2000-01-01T22:00:00.000Z">3:30 am </option>
+                            <option value="2000-01-01T22:30:00.000Z">4:00 am </option>
+                            <option value="2000-01-01T23:00:00.000Z">4:30 am </option>
+                            <option value="2000-01-01T23:30:00.000Z">5:00 am </option>
+                            <option value="2000-01-01T00:00:00.000Z">5:30 am </option>
+                            <option value="2000-01-01T00:30:00.000Z">6:00 am </option>
+                            <option value="2000-01-01T01:00:00.000Z">6:30 am </option>
+                            <option value="2000-01-01T01:30:00.000Z">7:00 am </option>
+                            <option value="2000-01-01T02:00:00.000Z">7:30 am </option>
+                            <option value="2000-01-01T02:30:00.000Z">8:00 am </option>
+                            <option value="2000-01-01T03:00:00.000Z">8:30 am </option>
+                            <option value="2000-01-01T03:30:00.000Z" selected>9:00 am </option>
+                            <option value="2000-01-01T04:00:00.000Z">9:30 am </option>
+                            <option value="2000-01-01T04:30:00.000Z">10:00 am </option>
+                            <option value="2000-01-01T05:00:00.000Z">10:30 am </option>
+                            <option value="2000-01-01T05:30:00.000Z">11:00 am </option>
+                            <option value="2000-01-01T06:00:00.000Z">11:30 am </option>
+                            <option value="2000-01-01T06:30:00.000Z">12:00 pm</option>
+                            <option value="2000-01-01T07:00:00.000Z">12:30 pm </option>
+                            <option value="2000-01-01T07:30:00.000Z">1:00 pm </option>
+                            <option value="2000-01-01T08:00:00.000Z">1:30 pm </option>
+                            <option value="2000-01-01T08:30:00.000Z">2:00 pm </option>
+                            <option value="2000-01-01T09:00:00.000Z">2:30 pm </option>
+                            <option value="2000-01-01T09:30:00.000Z">3:00 pm </option>
+                            <option value="2000-01-01T10:00:00.000Z">3:30 pm </option>
+                            <option value="2000-01-01T10:30:00.000Z">4:00 pm </option>
+                            <option value="2000-01-01T11:00:00.000Z">4:30 pm </option>
+                            <option value="2000-01-01T11:30:00.000Z">5:00 pm </option>
+                            <option value="2000-01-01T12:00:00.000Z">5:30 pm </option>
+                            <option value="2000-01-01T12:30:00.000Z">6:00 pm </option>
+                            <option value="2000-01-01T13:00:00.000Z">6:30 pm </option>
+                            <option value="2000-01-01T13:30:00.000Z">7:00 pm </option>
+                            <option value="2000-01-01T14:00:00.000Z">7:30 pm </option>
+                            <option value="2000-01-01T14:30:00.000Z">8:00 pm </option>
+                            <option value="2000-01-01T15:00:00.000Z">8:30 pm </option>
+                            <option value="2000-01-01T15:30:00.000Z">9:00 pm </option>
+                            <option value="2000-01-01T16:00:00.000Z">9:30 pm </option>
+                            <option value="2000-01-01T16:30:00.000Z">10:00 pm </option>
+                            <option value="2000-01-01T17:00:00.000Z">10:30 pm </option>
+                            <option value="2000-01-01T17:30:00.000Z">11:00 pm </option>
+                            <option value="2000-01-01T18:00:00.000Z">11:30 pm </option>
+                          </select></div>
+                      </td>
+                      <td>
+                        <div class="drop_selection">
+                          <select class="form-control" (change)="selectChange_closed($event)" id="category">
+                            <option value="2000-01-01T18:30:00.000Z">12:00 am</option>
+                            <option value="2000-01-01T19:00:00.000Z">12:30 am </option>
+                            <option value="2000-01-01T19:30:00.000Z">1:00 am </option>
+                            <option value="2000-01-01T20:00:00.000Z">1:30 am </option>
+                            <option value="2000-01-01T20:30:00.000Z">2:00 am </option>
+                            <option value="2000-01-01T21:00:00.000Z">2:30 am </option>
+                            <option value="2000-01-01T21:30:00.000Z">3:00 am </option>
+                            <option value="2000-01-01T22:00:00.000Z">3:30 am </option>
+                            <option value="2000-01-01T22:30:00.000Z">4:00 am </option>
+                            <option value="2000-01-01T23:00:00.000Z">4:30 am </option>
+                            <option value="2000-01-01T23:30:00.000Z">5:00 am </option>
+                            <option value="2000-01-01T00:00:00.000Z">5:30 am </option>
+                            <option value="2000-01-01T00:30:00.000Z">6:00 am </option>
+                            <option value="2000-01-01T01:00:00.000Z">6:30 am </option>
+                            <option value="2000-01-01T01:30:00.000Z">7:00 am </option>
+                            <option value="2000-01-01T02:00:00.000Z">7:30 am </option>
+                            <option value="2000-01-01T02:30:00.000Z">8:00 am </option>
+                            <option value="2000-01-01T03:00:00.000Z">8:30 am </option>
+                            <option value="2000-01-01T03:30:00.000Z" selected>9:00 am </option>
+                            <option value="2000-01-01T04:00:00.000Z">9:30 am </option>
+                            <option value="2000-01-01T04:30:00.000Z">10:00 am </option>
+                            <option value="2000-01-01T05:00:00.000Z">10:30 am </option>
+                            <option value="2000-01-01T05:30:00.000Z">11:00 am </option>
+                            <option value="2000-01-01T06:00:00.000Z">11:30 am </option>
+                            <option value="2000-01-01T06:30:00.000Z">12:00 pm</option>
+                            <option value="2000-01-01T07:00:00.000Z">12:30 pm </option>
+                            <option value="2000-01-01T07:30:00.000Z">1:00 pm </option>
+                            <option value="2000-01-01T08:00:00.000Z">1:30 pm </option>
+                            <option value="2000-01-01T08:30:00.000Z">2:00 pm </option>
+                            <option value="2000-01-01T09:00:00.000Z">2:30 pm </option>
+                            <option value="2000-01-01T09:30:00.000Z">3:00 pm </option>
+                            <option value="2000-01-01T10:00:00.000Z">3:30 pm </option>
+                            <option value="2000-01-01T10:30:00.000Z">4:00 pm </option>
+                            <option value="2000-01-01T11:00:00.000Z">4:30 pm </option>
+                            <option value="2000-01-01T11:30:00.000Z">5:00 pm </option>
+                            <option value="2000-01-01T12:00:00.000Z">5:30 pm </option>
+                            <option value="2000-01-01T12:30:00.000Z">6:00 pm </option>
+                            <option value="2000-01-01T13:00:00.000Z">6:30 pm </option>
+                            <option value="2000-01-01T13:30:00.000Z">7:00 pm </option>
+                            <option value="2000-01-01T14:00:00.000Z">7:30 pm </option>
+                            <option value="2000-01-01T14:30:00.000Z">8:00 pm </option>
+                            <option value="2000-01-01T15:00:00.000Z">8:30 pm </option>
+                            <option value="2000-01-01T15:30:00.000Z">9:00 pm </option>
+                            <option value="2000-01-01T16:00:00.000Z">9:30 pm </option>
+                            <option value="2000-01-01T16:30:00.000Z">10:00 pm </option>
+                            <option value="2000-01-01T17:00:00.000Z">10:30 pm </option>
+                            <option value="2000-01-01T17:30:00.000Z">11:00 pm </option>
+                            <option value="2000-01-01T18:00:00.000Z">11:30 pm </option>
+                          </select></div>
+                      </td>
+                      <td>
+                        <span (click)="hores_add()" class="btngrays" style="background: #c9cbca;margin-bottom: -7px;">Add Hours</span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div *ngIf="salon_gallery?.length != 0">
+                  <h5 class='custom-bussinfocolor' style="margin-bottom: 9px;">Salon Gallery</h5>
+                  <ul *ngFor="let gallerylist of salon_gallery; let i = index" class="custom-salon-galary">
+                    <li>
+                      <figure><img src="{{gallerylist?.image_url}}" style="width:70px;height:70px;border-radius:unset;">
+                      </figure>
+                      <a href="javascript:void(0)" class="close-galary-btn"
+                        (click)="gallery_remove(i,gallerylist.id)"><i class="close"><img
+                            src="assets/images/close-icn-sm.svg"></i></a>
+                    </li>
+                  </ul>
+                </div>
+                <h5 *ngIf="salon_gallery?.length == 0" class='custom-bussinfocolor' style="margin-bottom: 9px;">Salon Gallery</h5>
+                <div class="custom-galary-upload-btn">
+                  <span (click)="filed.click()" class="btngrays" style="background: #c5c7c6;">Add Gallery Image</span>
+                  <input #filed type="file" (click)="filed.value = null" (change)="onFileGalleryChange(filed.files)"
+                    style="display:none" accept="image/*">
+                  <br>
+                  <br>
+                  <input type="submit" value="update Information" class="btnblack">
+                </div>
+              </form>
+            </div>
+            
+            <div class="addressinput mb-0 text-center" style="text-align: center;">
+              <div *ngIf="url">
+                <img src="{{url}}" style="width:300px;height:300px;border-radius:unset;object-fit: contain;" class="profile-img">
+              </div>
+              <div *ngIf="!url">
+                <img src="assets/images/hf_imagedisplay.png" style="width:300px;height:300px;border-radius:unset;object-fit: contain;"
+                  class="profile-img">
+              </div>
+              <br>
+              <input #filed type="file" (click)="filed.value = null" (change)="onFileGalleryChange(filed.files)"
+            style="display:none" accept="image/*">
+              <a href="javascript:void(0)" class="custom-edit-profile-salon" (click)="file.click()"> <u><img src="assets/images/pencil_edit.png"
+                    style="width:15px"> Edit profile picture </u> </a>
+              <input #file type="file" (click)="file.value = null" (change)="onFileChange($event)" style="display:none"
+                accept="image/*">
+              <!-- <br>
+              <rating class="custom-rating-salon" [(ngModel)]="rate" [max]="max" [readonly]="isReadonly" (click)="confirmSelection($event)">
+              </rating> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

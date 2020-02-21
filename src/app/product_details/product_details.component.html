@@ -1,0 +1,196 @@
+<toaster-container [toasterconfig]="config" style="z-index:999999;"></toaster-container>
+<div class="container-fluid">
+  <div class="row">
+    <div class="commonpadfull" [ngClass]="{show: shouldShow, hide: !shouldShow }">
+      <div class="productdetailrow">
+        <div class="row justify-content-between flex-wrap">
+          <div class="productviewcol">
+            <h1>{{product_detail?.name | titlecase }}</h1>
+            <div class="gallerycol">
+              <ngx-gallery [options]="galleryOptions" [images]="galleryImages" (previewOpen)="previewOpen()"
+                (previewClose)="previewClose()"></ngx-gallery>
+            </div>
+          </div>
+          <div class="productviewcol">
+            <div class="quickshopdetail">
+              <h4>Product Description:</h4>
+              <div class="containerss" [class.showss]="showss">
+                {{product_detail?.description}}
+              </div>
+              <a *ngIf="product_detail?.description.length > 232" href="javascript:void(0)"
+                (click)="showss = !showss">{{ showss ? 'See Less': 'See More' }}</a>
+              <div class="pricerow d-flex justify-content-between align-items-center">
+                <strong>
+                  <h3><s *ngIf="product_detail?.price != product_detail?.final_price"
+                      style="color: #9e9697;"><small>${{(product_detail?.price != null)? product_detail?.price: '00.00'}}</small></s>
+                    &#160;
+                    <span *ngIf="product_detail?.price != product_detail?.final_price" style="color: #e74c3c;">
+                      ${{(product_detail?.final_price != null)? product_detail?.final_price: '00.00'}}</span>
+                    <span *ngIf="product_detail?.price == product_detail?.final_price">
+                      ${{(product_detail?.final_price != null)? product_detail?.final_price: '00.00'}}</span>
+                  </h3>
+                </strong>
+              </div>
+            </div>
+            <div *ngIf="product_detail?.product_brand != null" class="brandrow">
+              <div class="row justify-content-between">
+                <div class="brandcol col-sm-12">
+                  <h4>Brand</h4>
+                  <div class="brandlogo d-flex justify-content-start align-items-center">
+                    <span class="marhin-h1-">
+                      <h1>{{product_detail?.product_brand?.title}}</h1>
+                    </span>
+                    <span class="brand-small-images custom-brand-images"
+                      *ngIf="product_detail?.product_brand?.image != null"><img
+                        img-preloader="{{product_detail?.product_brand?.image}}"
+                        (error)="imgErrorHandler($event)"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="productcolor">
+              <div class="d-flex justify-content-between">
+                <div class="services">
+                  <h4>Qty</h4>
+                  <div class="counter">
+                    <button (click)="decrement()" class="minus" [disabled]="(count>1)? false:true">-</button>
+                    <input type="text" value="{{count}}" class="form-control" (ngModelChange)="onChange($event)"
+                      numbersOnly readonly="true">
+                    <button (click)="increment()" class="plus" [disabled]="count>=product_detail?.quantity">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="is_logged_in" class="btnoaddtocart">
+              <p *ngIf="product_detail?.quantity == 0 || null" class="outofstock">Product Not available or Out of Stock
+              </p>
+              <a *ngIf="product_detail?.quantity != 0 || null">
+                <a style="margin-left: -20px;" class="btngrayhoveb" href="javascript:void(0)"
+                  (click)="addToCart(product_detail?.id ,count)"><i class="addtocarticn"></i><span>Add
+                    To Cart</span></a>
+              </a>
+              <a *ngIf="!product_detail?.is_favourite" class="btngrayhoveb" (click)="addFavourite(product_detail?.id)"
+                href="javascript:void(0)"><i class="hartcin"></i><span>Add To wishlist</span></a>
+              <a *ngIf="product_detail?.is_favourite" class="btngrayhoveb" (click)="removeFavourite(product_detail?.id)"
+                href="javascript:void(0)"><i class="hartcin"></i><span>Remove wishlist</span></a>
+            </div>
+            <div *ngIf="!is_logged_in" class="btnoaddtocart">
+              <p *ngIf="product_detail?.quantity == 0 || null" class="outofstock">Product Not available or Out of Stock
+              </p>
+              <a *ngIf="product_detail?.quantity != 0 || null">
+                <a style="margin-left: -20px;" class="btngrayhoveb" href="javascript:void(0)"
+                  (click)="notaddproduct()"><i class="addtocarticn"></i><span>Add
+                    To Cart</span></a>
+                <a class="btngrayhoveb" (click)="notaddproduct()" href="javascript:void(0)"><i
+                    class="hartcin"></i><span>Add
+                    To wishlist</span></a></a>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="related_flag" class="productlikerow">
+          <div class="otherproductlistrow">
+            <h2>You might like these</h2>
+            <ngx-carousel [inputs]="carouselOne">
+              <ngx-item NgxCarouselItem *ngFor="let relate of product_detail?.related_products">
+                <div class="custom-product-wrap">
+                <div class="hovrer_View productitempostlist"  (click)="seeProductDetails_screen($event, relate?.id)">
+                  <div class="producthubpost d-flex justify-content-center align-items-center">
+                    <img img-preloader="{{relate?.product_image}}" (error)="imgErrorHandler($event)">
+                  </div>
+                  <p> {{relate?.name.length > 25 ?
+                    relate?.name.substr(0,25).concat("..."):
+                    relate?.name}} </p>
+                  <strong>${{relate?.final_price}}</strong>
+                  <a href="javascript:void(0)" class="btngrayhoveb" (click)="openModal(template1, relate);$event.stopPropagation()">Add To
+                    Cart</a>
+                    <p></p>
+                </div>
+                <a class="add-wish-list-btn" *ngIf="is_logged_in" href="javascript:void(0)" (mousein)="changeStyle($event)"
+                      (click)="!relate?.is_favourite ? addFavourite(relate?.id) : removeFavourite(relate?.id);$event.stopPropagation()">
+                      <i class="hearticon" [ngClass]="{'hearticon-active': relate?.is_favourite}"></i>
+                </a>
+              </div>
+              </ngx-item>
+              <button NgxCarouselPrev class='leftRs'><img src="assets/images/left-arrow.svg"></button>
+              <button NgxCarouselNext class='rightRs'>
+                <!-- *ngIf="product_detail.related_products.length > 5" -->
+                <img src="assets/images/right-arrow.svg"></button>
+            </ngx-carousel>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template1>
+  <div class="modal-body quickshopmodel storelandind-popup-man">
+    <div class="close-btn" (click)="modalRef.hide()">
+      <img src="assets/images/gn_0.png" height="85px;">
+    </div>
+    <div class="d-flex align-items-end justify-content-between flex-wrap">
+      <div class="popproleftcol text-center">
+        <img img-preloader="{{product_data?.product_image}}" style=" object-fit: contain;min-height:520px;"
+          (error)="imgErrorHandler($event)">
+      </div>
+      <div class="productpopright">
+        <div class="quickshopdetail">
+          <h1 style="font-size: 28px; width: 90%;"> {{product_data?.name.length > 75 ?
+            product_data?.name.substr(0,75).concat("..."):
+            product_data?.name}}</h1>
+          <p *ngIf="product_data?.description != null">
+            {{product_data?.description.length > 232 ?
+              product_data?.description.substr(0,232).concat("..."):
+              product_data?.description}}
+          </p>
+          <p *ngIf="product_data?.description == null">No Description</p>
+          <strong>
+            <h3><s *ngIf="product_data?.price != product_data?.final_price"
+              style="color: #9e9697;" ><small>${{(product_data?.price != null)? product_data?.price: '00.00'}}</small></s>
+              &#160;
+              <span *ngIf="product_data?.price != product_data?.final_price" style="color: #e74c3c;">
+                ${{(product_data?.final_price != null)? product_data?.final_price: '00.00'}}</span>
+              <span *ngIf="product_data?.price == product_data?.final_price">
+                ${{(product_data?.final_price != null)? product_data?.final_price: '00.00'}}</span>
+            </h3>
+          </strong>
+        </div>
+        <div class="quickshopcolorcol">
+          <div class="row justify-content-between">
+            <div class="services col-sm-6 col-md-7">
+              <h4>Qty</h4>
+              <div class="counter">
+                <button (click)="decrement()" class="minus" [disabled]="(count>1)? false:true">-</button>
+                <input type="text" value="{{count}}" class="form-control" (ngModelChange)="onChange($event)" numbersOnly
+                  readonly="true">
+                <button (click)="increment()" class="plus" [disabled]="count>=product_data?.quantity">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="addtocarbtnpop">
+          <div class="row align-items-end">
+            <div *ngIf="product_data?.quantity != 0 || null" class="col-sm-7 col-lg-7"><a *ngIf="is_logged_in"
+                href="javascript:void(0)" (click)="addToCart(product_data?.id,count)" class="btnblack"><i><img
+                    src="assets/images/cart-icon-fill.svg"></i><span>Add
+                  To Cart</span></a><a *ngIf="!is_logged_in" href="javascript:void(0)" (click)="notaddproduct()"
+                class="btnblack"><i><img src="assets/images/cart-icon-fill.svg"></i><span>Add
+                  To Cart</span></a>
+            </div>
+            <div *ngIf="product_data?.quantity == 0 || null" class="col-sm-7 col-lg-7">
+              <a class="outofstock">
+                <u style="color: #d11515;">Product Not available or Out of Stock</u>
+              </a>
+
+            </div>
+            <div class="col-sm-5 col-lg-5">
+              <a href="javascript:void(0)" class="link" (click)="seeProductDetails($event, product_data?.id)">See
+                full details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
